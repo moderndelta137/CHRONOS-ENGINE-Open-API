@@ -40,6 +40,7 @@
             --bar-hp-bg: #4a0000;
             --bar-ap: #2a88ff;
             --bar-ap-bg: #00224a;
+            --app-height: 100vh;
         }
 
         [data-theme="classic"] {
@@ -97,8 +98,9 @@
             color: var(--tm-text);
             font-family: 'VT323', monospace;
             margin: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            min-height: var(--app-height);
+            min-height: 100dvh;
             user-select: none;
             perspective: 1000px;
             overflow-x: hidden;
@@ -449,12 +451,101 @@
 
         /* Overlays */
         .overlay-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100%; min-height: var(--app-height); min-height: 100dvh;
             background-color: var(--tm-bg);
             z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 1.5rem;
+            text-align: center; padding: calc(1.5rem + env(safe-area-inset-top, 0px)) 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
             overflow-y: auto;
             overflow-x: hidden;
+        }
+
+        #timeline-screen {
+            width: 100%;
+            min-height: var(--app-height);
+            min-height: 100dvh;
+        }
+
+        @media (max-width: 767px) {
+            body, html {
+                min-height: var(--app-height);
+                min-height: 100dvh;
+            }
+
+            .radar-container,
+            .crt-overlay,
+            .tv-static,
+            #screen-flash {
+                width: 100%;
+                height: var(--app-height);
+                height: 100dvh;
+            }
+
+            .overlay-screen {
+                justify-content: flex-start;
+                align-items: stretch;
+                padding-left: 0.9rem;
+                padding-right: 0.9rem;
+            }
+
+            #title-screen,
+            #intro-screen,
+            #result-screen,
+            #briefing-screen,
+            #game-over-overlay {
+                justify-content: flex-start;
+            }
+
+            #timeline-screen {
+                height: auto;
+                padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
+                overflow-y: auto;
+            }
+
+            #screen-container {
+                min-height: var(--app-height);
+                min-height: 100dvh;
+                padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
+                overflow-y: auto;
+                overflow-x: hidden;
+                transform: none;
+            }
+
+            #screen-container .panel {
+                padding: 0.8rem;
+            }
+
+            #panel-terminal {
+                min-height: 52dvh;
+            }
+
+            #terminal-output {
+                min-height: 34dvh;
+                padding-right: 0.25rem;
+                padding-bottom: 1rem;
+            }
+
+            #loading-indicator {
+                left: 0.75rem;
+                right: 0.75rem;
+                bottom: 4.5rem;
+                max-width: none;
+                font-size: 0.8rem;
+                white-space: normal;
+            }
+
+            #options-menu {
+                max-height: 45dvh;
+            }
+
+            #input-trigger,
+            #cmd-input {
+                font-size: 1rem;
+            }
+
+            #tutorial-dialog {
+                width: calc(100% - 1.5rem);
+                max-width: none;
+            }
         }
 
         /* Timeline Graph Elements */
@@ -1240,7 +1331,7 @@
     <script>
         /** --- CONFIGURATION & API --- */
         const defaultModelName = 'gemini-2.5-flash-preview-09-2025';
-        const geminiRateLimitRpm = 5;
+        const geminiRateLimitRpm = 10;
         const geminiRateLimitWindowMs = 60 * 1000;
         const settingsStorageKey = 'chronos_settings_v1';
         const defaultSettings = {
@@ -1255,6 +1346,11 @@
         /** --- THEME TOGGLE LOGIC --- */
         const themes = ['default', 'classic', 'amber', 'cyber', 'blood'];
         let currentThemeIdx = 0;
+
+        function syncViewportHeight() {
+            const viewportHeight = window.visualViewport?.height || window.innerHeight;
+            document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+        }
 
         function getThemeIndex(themeName) {
             const idx = themes.indexOf(themeName);
@@ -3987,6 +4083,10 @@ Return JSON matching schema.`;
         }
 
         startHardwareFlicker();
+        syncViewportHeight();
+        window.addEventListener('resize', syncViewportHeight);
+        window.addEventListener('orientationchange', syncViewportHeight);
+        window.visualViewport?.addEventListener('resize', syncViewportHeight);
 
         settings = getSavedSettings();
         currentLang = settings.language;
