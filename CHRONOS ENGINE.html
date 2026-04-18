@@ -171,10 +171,16 @@
             position: relative;
             text-shadow: 1px 0px 1px rgba(255, 0, 0, 0.3), -1px 0px 1px rgba(0, 255, 255, 0.3);
             transform: scale(0.99) rotateX(0.5deg);
+            box-sizing: border-box;
         }
 
         @media (min-width: 1024px) {
-            #screen-container { padding: 1.5rem; overflow: hidden; }
+            #screen-container {
+                height: var(--app-height);
+                max-height: var(--app-height);
+                padding: 1.5rem;
+                overflow: hidden;
+            }
         }
 
         /* Scrollbars */
@@ -704,6 +710,37 @@
             text-shadow: inherit;
         }
         @media (min-width: 1024px) { input { font-size: 1.5rem; } }
+
+        .ai-status-offline {
+            color: #ff6666 !important;
+            border-color: rgba(220, 38, 38, 0.9) !important;
+            background-color: rgba(127, 29, 29, 0.18);
+            box-shadow: 0 0 18px rgba(220, 38, 38, 0.25);
+            animation: ai-status-alert 1s steps(2, end) infinite;
+        }
+
+        .ai-status-online {
+            color: #86efac !important;
+            border-color: rgba(34, 197, 94, 0.85) !important;
+            background-color: rgba(20, 83, 45, 0.22);
+            box-shadow: 0 0 18px rgba(34, 197, 94, 0.24);
+            animation: none;
+        }
+
+        @keyframes ai-status-alert {
+            0%, 49% {
+                color: #ff6666;
+                border-color: rgba(220, 38, 38, 0.95);
+                background-color: rgba(127, 29, 29, 0.22);
+                box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+            }
+            50%, 100% {
+                color: #fecaca;
+                border-color: rgba(127, 29, 29, 0.55);
+                background-color: rgba(69, 10, 10, 0.1);
+                box-shadow: 0 0 8px rgba(127, 29, 29, 0.16);
+            }
+        }
 
         /* Tutorial Effects */
         .tutorial-highlight {
@@ -2056,6 +2093,7 @@
         let lastAiDebugInfo = null;
         let geminiRequestTimestamps = [];
         let availableGeminiModels = [defaultModelName];
+        let aiConnectionState = 'offline';
 
         function getSavedSettings() {
             try {
@@ -2076,6 +2114,28 @@
 
         function getConfiguredModel() {
             return (settings.model || defaultModelName).trim() || defaultModelName;
+        }
+
+        function setAiConnectionState(nextState) {
+            aiConnectionState = nextState === 'online' ? 'online' : 'offline';
+            updateAiConnectionIndicator();
+        }
+
+        function updateAiConnectionIndicator() {
+            const trigger = document.getElementById('input-trigger');
+            if (!trigger) return;
+
+            const hasApiKey = !!getConfiguredApiKey();
+            const hasModel = !!getConfiguredModel();
+            const isOnline = aiConnectionState === 'online' && hasApiKey && hasModel;
+
+            trigger.classList.remove('ai-status-offline', 'ai-status-online');
+
+            if (isOnline) {
+                trigger.classList.add('ai-status-online');
+            } else {
+                trigger.classList.add('ai-status-offline');
+            }
         }
 
         function getModelEndpoint() {
@@ -2198,6 +2258,7 @@
                 }
                 populateModelSelect(preferredModel || settings.model);
                 updateSettingsStatus(`Loaded ${availableGeminiModels.length} models from the API.`, 'var(--tm-highlight)');
+                setAiConnectionState('online');
             } catch (error) {
                 const debug = setLastAiDebugInfo(error, {
                     phase: 'list-models',
@@ -2205,6 +2266,7 @@
                     apiKey
                 });
                 updateSettingsStatus(debug, 'var(--bar-hp)');
+                setAiConnectionState('offline');
             }
         }
 
@@ -2271,6 +2333,7 @@
             if (apiKeyInput) apiKeyInput.value = settings.apiKey;
             updateSpeedLabel();
             updateSettingsStatus();
+            updateAiConnectionIndicator();
         }
 
         function openSettingsModal() {
@@ -2328,6 +2391,7 @@
                 }
                 settingsStatusKey = 'settingsStatusOk';
                 updateSettingsStatus();
+                setAiConnectionState('online');
             } catch (error) {
                 const debug = setLastAiDebugInfo(error, {
                     phase: 'settings-test',
@@ -2337,6 +2401,7 @@
                 });
                 settingsStatusKey = 'settingsStatusFailed';
                 updateSettingsStatus(debug, 'var(--bar-hp)');
+                setAiConnectionState('offline');
             }
         }
 
@@ -3590,6 +3655,7 @@
                             attempt: i
                         }));
                     }
+                    setAiConnectionState('online');
                     return await response.json();
                 } catch (e) {
                     setLastAiDebugInfo(e, {
@@ -3597,6 +3663,7 @@
                         endpoint: `models/${getConfiguredModel()}:generateContent`,
                         attempt: i
                     });
+                    setAiConnectionState('offline');
                     if (i === retries) throw e;
                     await new Promise(res => setTimeout(res, delays[i]));
                 }
@@ -3705,6 +3772,7 @@ Return JSON matching schema.`;
                 setLastAiDebugInfo(error, {
                     phase: 'generate-final'
                 });
+                setAiConnectionState('offline');
                 return null;
             }
         }
@@ -4110,12 +4178,14 @@ Return JSON matching schema.`;
 
         document.getElementById('settings-model-select')?.addEventListener('change', (e) => {
             settings.model = e.target.value;
+            setAiConnectionState('offline');
         });
 
         document.getElementById('settings-api-key')?.addEventListener('input', (e) => {
             settings.apiKey = e.target.value;
             settingsStatusKey = settings.apiKey.trim() ? 'settingsStatusSaved' : 'settingsStatusMissing';
             updateSettingsStatus();
+            setAiConnectionState('offline');
         });
 
         document.getElementById('btn-open-settings')?.addEventListener('click', openSettingsModal);
@@ -4139,6 +4209,7 @@ Return JSON matching schema.`;
             applyLanguage();
             settingsStatusKey = settings.apiKey ? 'settingsStatusSaved' : 'settingsStatusMissing';
             updateSettingsStatus();
+            setAiConnectionState('offline');
         });
 
         document.getElementById('btn-clear-api-key')?.addEventListener('click', () => {
@@ -4147,6 +4218,7 @@ Return JSON matching schema.`;
             saveSettings();
             settingsStatusKey = 'settingsStatusCleared';
             updateSettingsStatus();
+            setAiConnectionState('offline');
         });
 
         document.getElementById('btn-reset-settings-defaults')?.addEventListener('click', () => {
@@ -4158,6 +4230,7 @@ Return JSON matching schema.`;
             applyTheme(settings.theme);
             applyLanguage();
             syncSettingsControls();
+            setAiConnectionState('offline');
         });
 
         document.addEventListener('keydown', (e) => {
@@ -4169,6 +4242,7 @@ Return JSON matching schema.`;
         updateResetButtonVisibility();
         syncSettingsControls();
         applyLanguage();
+        updateAiConnectionIndicator();
 
     </script>
 </body>
