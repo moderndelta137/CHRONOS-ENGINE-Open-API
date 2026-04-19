@@ -670,6 +670,41 @@
             opacity: 0.9;
         }
 
+        .intro-stack {
+            width: 100%;
+            max-width: 64rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .intro-visual-frame {
+            width: 100%;
+            border: 1px solid var(--tm-border);
+            background: rgba(0, 0, 0, 0.72);
+            box-shadow: 0 0 18px var(--tm-shadow);
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .intro-visual {
+            width: 100%;
+            height: min(32dvh, 18rem);
+            object-fit: contain;
+            object-position: center center;
+            display: block;
+            background: #020202;
+            filter: saturate(0.95) contrast(1.04);
+        }
+
+        #intro-panel {
+            width: 100%;
+            min-height: 0;
+        }
+
+        #intro-text {
+            min-height: 9rem;
+        }
+
         #timeline-screen {
             position: fixed;
             inset: 0;
@@ -829,8 +864,16 @@
             }
 
             #intro-panel {
-                min-height: min(60dvh, 480px);
+                min-height: min(34dvh, 280px);
                 padding: 1rem;
+            }
+
+            .intro-stack {
+                max-width: 100%;
+            }
+
+            .intro-visual {
+                height: min(24dvh, 10.5rem);
             }
 
             #intro-text {
@@ -1239,9 +1282,22 @@
             }
 
             #intro-panel {
-                min-height: min(68dvh, 30rem);
-                max-width: min(94vw, 56rem);
-                padding: 1rem 1.15rem;
+                min-height: min(30dvh, 14rem);
+                max-width: min(74vw, 42rem);
+                padding: 0.8rem 0.95rem;
+            }
+
+            .intro-visual-frame {
+                padding: 0.4rem;
+                margin-bottom: 0.7rem;
+            }
+
+            .intro-stack {
+                max-width: min(74vw, 42rem);
+            }
+
+            .intro-visual {
+                height: min(21dvh, 8.5rem);
             }
 
             #timeline-screen,
@@ -2126,12 +2182,18 @@
             </g>
         </svg>
         
-        <div id="intro-panel" class="bg-sys-panel border border-sys-border p-8 w-full max-w-4xl relative z-10 shadow-[0_0_30px_var(--tm-shadow)] min-h-[350px] flex flex-col">
-            <div id="intro-text" class="text-2xl md:text-3xl text-sys-text leading-relaxed text-left flex-1 whitespace-pre-wrap"></div>
-            
-            <div class="flex justify-between mt-8 border-t border-sys-border pt-4 shrink-0">
-                <button id="btn-intro-skip" class="text-sys-dim hover:text-sys-text transition-colors text-xl font-bold cursor-pointer">[ SKIP >> ]</button>
-                <button id="btn-intro-next" class="text-sys-highlight hover:text-white transition-colors text-2xl font-bold cursor-pointer flicker">[ NEXT > ]</button>
+        <div class="intro-stack">
+            <div class="intro-visual-frame relative z-10">
+                <img id="intro-visual" class="intro-visual" alt="Intro illustration">
+            </div>
+
+            <div id="intro-panel" class="bg-sys-panel border border-sys-border p-8 w-full max-w-4xl relative z-10 shadow-[0_0_30px_var(--tm-shadow)] min-h-[350px] flex flex-col">
+                <div id="intro-text" class="text-2xl md:text-3xl text-sys-text leading-relaxed text-left flex-1 whitespace-pre-wrap"></div>
+                
+                <div class="flex justify-between mt-8 border-t border-sys-border pt-4 shrink-0">
+                    <button id="btn-intro-skip" class="text-sys-dim hover:text-sys-text transition-colors text-xl font-bold cursor-pointer">[ SKIP >> ]</button>
+                    <button id="btn-intro-next" class="text-sys-highlight hover:text-white transition-colors text-2xl font-bold cursor-pointer flicker">[ NEXT > ]</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3220,7 +3282,7 @@
         async function syncBgmPlayback() {
             const audioEnabled = titleBgmUnlocked && settings.audioEnabled !== false;
             const shouldPlayTitle = audioEnabled && activeScreenId === 'title-screen';
-            const shouldPlayMission = audioEnabled && (activeScreenId === 'intro-screen' || activeScreenId === 'timeline-screen');
+            const shouldPlayMission = audioEnabled && (activeScreenId === 'intro-screen' || activeScreenId === 'timeline-screen' || activeScreenId === 'briefing-screen');
             const shouldPlayGame = audioEnabled && activeScreenId === 'screen-container';
             updateBgmVolume();
 
@@ -4580,6 +4642,11 @@
         let slideTimeout;
         let isPanelAnimating = false;
 
+        function getIntroSlideSprite(index) {
+            const spriteIndex = index + 1;
+            return `assets/sprites/intro sprites/intro_${spriteIndex}.png`;
+        }
+
         function showSlide() {
             const t = i18n[currentLang].introSlides;
             if (currentSlide >= t.length) {
@@ -4589,7 +4656,13 @@
             
             const el = document.getElementById('intro-text');
             const panel = document.getElementById('intro-panel');
+            const visual = document.getElementById('intro-visual');
             const text = t[currentSlide];
+
+            if (visual) {
+                visual.src = encodeURI(getIntroSlideSprite(currentSlide));
+                visual.alt = `Intro slide illustration ${currentSlide + 1}`;
+            }
             
             function startTyping() {
                 el.innerHTML = "";
