@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>CHRONOS ENGINE - Master Terminal</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/styles/tailwind.generated.css">
@@ -615,6 +618,58 @@
             overflow-x: hidden;
         }
 
+        #mobile-orientation-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 1200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: calc(1rem + env(safe-area-inset-top, 0px)) calc(1rem + env(safe-area-inset-right, 0px)) calc(1rem + env(safe-area-inset-bottom, 0px)) calc(1rem + env(safe-area-inset-left, 0px));
+            background:
+                radial-gradient(circle at center, rgba(205, 127, 50, 0.08), transparent 52%),
+                rgba(5, 5, 5, 0.96);
+            backdrop-filter: blur(8px);
+            text-align: center;
+        }
+
+        .orientation-gate-card {
+            width: min(92vw, 32rem);
+            border: 1px solid var(--tm-highlight);
+            background: var(--tm-panel);
+            box-shadow: 0 0 30px var(--tm-shadow);
+            padding: 1.4rem 1.25rem;
+        }
+
+        .orientation-gate-icon {
+            font-size: 2.4rem;
+            line-height: 1;
+            color: var(--tm-highlight);
+            margin-bottom: 0.9rem;
+            text-shadow: 0 0 18px var(--tm-shadow);
+        }
+
+        .orientation-gate-title {
+            font-size: 1.55rem;
+            color: var(--tm-text);
+            letter-spacing: 0.06em;
+            margin-bottom: 0.65rem;
+        }
+
+        .orientation-gate-copy {
+            font-size: 1.05rem;
+            line-height: 1.45;
+            color: var(--tm-dim);
+            margin-bottom: 1rem;
+        }
+
+        .orientation-gate-hint {
+            font-size: 0.92rem;
+            line-height: 1.35;
+            color: var(--tm-highlight);
+            opacity: 0.9;
+        }
+
         #timeline-screen {
             position: fixed;
             inset: 0;
@@ -715,6 +770,10 @@
         }
 
         @media (max-width: 767px) and (orientation: portrait) {
+            #mobile-orientation-gate {
+                display: flex;
+            }
+
             #btn-open-settings {
                 top: calc(0.6rem + env(safe-area-inset-top, 0px));
                 right: 0.6rem;
@@ -1116,6 +1175,237 @@
                 text-align: center;
                 padding-left: 1rem;
                 padding-right: 1rem;
+            }
+        }
+
+        @media (max-width: 1024px) and (orientation: landscape) and (pointer: coarse) {
+            body, html {
+                overflow: hidden;
+            }
+
+            #mobile-orientation-gate {
+                display: none !important;
+            }
+
+            .overlay-screen {
+                justify-content: center;
+                align-items: center;
+                padding:
+                    calc(0.65rem + env(safe-area-inset-top, 0px))
+                    calc(0.8rem + env(safe-area-inset-right, 0px))
+                    calc(0.65rem + env(safe-area-inset-bottom, 0px))
+                    calc(0.8rem + env(safe-area-inset-left, 0px));
+            }
+
+            #title-screen {
+                justify-content: center;
+                overflow: hidden;
+            }
+
+            #title-screen > h1 {
+                font-size: clamp(2.8rem, 7vw, 4.8rem);
+                line-height: 0.9;
+            }
+
+            #title-screen > .bg-sys-panel {
+                width: min(94vw, 52rem);
+                margin-top: 0.8rem;
+                padding: 1rem 1.15rem;
+            }
+
+            #title-screen .absolute.top-4.left-4 {
+                top: calc(0.55rem + env(safe-area-inset-top, 0px));
+                left: calc(0.55rem + env(safe-area-inset-left, 0px));
+                right: auto;
+                gap: 0.5rem;
+                flex-wrap: nowrap;
+            }
+
+            #title-screen .lang-btn {
+                font-size: 0.96rem;
+                padding: 0.65rem 1rem;
+            }
+
+            #intro-panel {
+                min-height: min(68dvh, 30rem);
+                max-width: min(94vw, 56rem);
+                padding: 1rem 1.15rem;
+            }
+
+            #timeline-screen,
+            #screen-container {
+                padding:
+                    calc(0.5rem + env(safe-area-inset-top, 0px))
+                    calc(0.6rem + env(safe-area-inset-right, 0px))
+                    calc(0.55rem + env(safe-area-inset-bottom, 0px))
+                    calc(0.6rem + env(safe-area-inset-left, 0px));
+                overflow: hidden;
+                gap: 0.55rem;
+            }
+
+            #timeline-screen {
+                justify-content: space-between;
+            }
+
+            #timeline-screen > .relative.w-full.flex-1 {
+                min-height: 0;
+                margin-bottom: 0;
+            }
+
+            #timeline-tree {
+                min-height: 0;
+                padding: 1.4rem 1.6rem 4rem;
+            }
+
+            #timeline-screen > .flex.justify-between.items-end.w-full {
+                flex-direction: row;
+                align-items: end;
+                gap: 0.6rem;
+            }
+
+            #timeline-screen > .flex.justify-between.items-end.w-full > .flex.gap-4 {
+                display: flex;
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+
+            #timeline-screen > .flex.justify-between.items-end.w-full button {
+                width: auto;
+                padding: 0.55rem 0.8rem;
+                font-size: 0.86rem;
+            }
+
+            #timeline-screen > .flex.justify-between.items-end.w-full > .bg-black {
+                width: auto;
+                padding: 0.65rem 0.85rem;
+                gap: 0.65rem;
+            }
+
+            #briefing-screen {
+                justify-content: flex-start;
+                align-items: center;
+                overflow-y: auto;
+                padding:
+                    calc(0.55rem + env(safe-area-inset-top, 0px))
+                    calc(0.6rem + env(safe-area-inset-right, 0px))
+                    calc(0.75rem + env(safe-area-inset-bottom, 0px))
+                    calc(0.6rem + env(safe-area-inset-left, 0px));
+            }
+
+            #ui-brf-header {
+                font-size: clamp(2rem, 4.4vw, 3.3rem);
+                margin-bottom: 0.6rem;
+            }
+
+            #briefing-screen > .w-full.max-w-6xl {
+                width: min(96vw, 84rem);
+                flex: 0 0 auto;
+                gap: 0.7rem;
+            }
+
+            #briefing-screen > .w-full.max-w-6xl > div {
+                max-height: min(68dvh, 34rem);
+                padding: 1rem;
+            }
+
+            .briefing-agent-bookmarks {
+                margin-top: 0.6rem;
+            }
+
+            #briefing-screen > .flex.justify-center.gap-4 {
+                width: min(96vw, 84rem);
+                margin-top: 0.7rem;
+                gap: 0.7rem;
+            }
+
+            #briefing-screen > .flex.justify-center.gap-4 button {
+                min-width: 15rem;
+            }
+
+            #screen-container > .flex.flex-col.lg\\:flex-row.gap-4.shrink-0.w-full.mb-4.items-stretch.lg\\:h-52 {
+                flex-direction: row;
+                gap: 0.55rem;
+                margin-bottom: 0;
+                align-items: stretch;
+            }
+
+            #panel-objective {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            #panel-agent {
+                width: min(34vw, 29rem);
+                min-width: 20rem;
+            }
+
+            #screen-container > .flex.flex-col.lg\\:flex-row.gap-4.shrink-0.w-full.mb-4.items-stretch.lg\\:h-52 > .panel:last-child {
+                width: min(22vw, 18rem);
+                min-width: 14rem;
+            }
+
+            #mission-objective {
+                max-height: none;
+                font-size: 1.02rem;
+                line-height: 1.2;
+            }
+
+            #btn-intel,
+            #btn-eject {
+                font-size: 0.88rem;
+                padding: 0.6rem 0.7rem;
+            }
+
+            #agent-skills-inv,
+            #nodes-list {
+                max-height: none;
+            }
+
+            #panel-terminal {
+                min-height: 0;
+            }
+
+            #terminal-output {
+                min-height: 0;
+                padding-bottom: 0.7rem;
+            }
+
+            .log-ai {
+                font-size: 1rem;
+                line-height: 1.35;
+            }
+
+            .log-operator {
+                max-width: 86%;
+                margin-bottom: 0.8rem;
+            }
+
+            #screen-container > .flex.flex-col.lg\\:flex-row.justify-between.lg\\:items-end.mt-4.shrink-0.gap-4.lg\\:gap-6 {
+                flex-direction: row;
+                align-items: end;
+                gap: 0.55rem;
+                margin-top: 0;
+            }
+
+            #ui-fdl-container,
+            #ui-div-container {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            #fdl-gauge-container {
+                height: 1.6rem;
+            }
+
+            #divergence-value {
+                font-size: clamp(1.7rem, 4vw, 2.6rem) !important;
+            }
+
+            #divergence-diff,
+            #divergence-target,
+            #timeline-divergence-diff,
+            #timeline-divergence-target {
+                font-size: 0.95rem !important;
             }
         }
 
@@ -1550,6 +1840,19 @@
                         <button data-se-debug="gameover" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer sm:col-span-2 xl:col-span-3">[ GAME OVER ]</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-orientation-gate" aria-hidden="true">
+        <div class="orientation-gate-card">
+            <div class="orientation-gate-icon">⤿</div>
+            <div class="orientation-gate-title">Rotate To Landscape</div>
+            <div class="orientation-gate-copy">
+                CHRONOS ENGINE is tuned for a wide terminal layout on phones. Rotate your device to landscape for the intended play view.
+            </div>
+            <div class="orientation-gate-hint">
+                On Safari, full screen and toolbar hiding are limited in the browser. For the cleanest result, use landscape and optionally add the game to your Home Screen.
             </div>
         </div>
     </div>
@@ -2117,6 +2420,52 @@
         function syncViewportHeight() {
             const viewportHeight = window.visualViewport?.height || window.innerHeight;
             document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+        }
+
+        function isCoarseMobileViewport() {
+            return window.matchMedia('(max-width: 1024px) and (pointer: coarse)').matches;
+        }
+
+        function isLandscapeViewport() {
+            return window.matchMedia('(orientation: landscape)').matches;
+        }
+
+        function updateMobileOrientationGate() {
+            const gate = document.getElementById('mobile-orientation-gate');
+            if (!gate) return;
+            const shouldShow = isCoarseMobileViewport() && !isLandscapeViewport();
+            gate.style.display = shouldShow ? 'flex' : 'none';
+            gate.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+            document.documentElement.classList.toggle('mobile-portrait-gated', shouldShow);
+        }
+
+        async function tryEnterImmersiveMobileMode() {
+            if (!isCoarseMobileViewport()) return;
+
+            const docEl = document.documentElement;
+            const fullScreenEl = document.fullscreenElement || document.webkitFullscreenElement;
+
+            if (!fullScreenEl) {
+                try {
+                    if (docEl.requestFullscreen) {
+                        await docEl.requestFullscreen({ navigationUI: 'hide' });
+                    } else if (docEl.webkitRequestFullscreen) {
+                        docEl.webkitRequestFullscreen();
+                    }
+                } catch (_) {
+                    // Safari/iOS browser mode commonly rejects fullscreen.
+                }
+            }
+
+            try {
+                if (screen.orientation?.lock) {
+                    await screen.orientation.lock('landscape');
+                }
+            } catch (_) {
+                // Many mobile browsers, especially Safari, do not allow this.
+            }
+
+            updateMobileOrientationGate();
         }
 
         class ChronosAudioEngine {
@@ -6421,9 +6770,20 @@ Return JSON matching schema.`;
 
         startHardwareFlicker();
         syncViewportHeight();
+        updateMobileOrientationGate();
         window.addEventListener('resize', syncViewportHeight);
-        window.addEventListener('orientationchange', syncViewportHeight);
-        window.visualViewport?.addEventListener('resize', syncViewportHeight);
+        window.addEventListener('orientationchange', () => {
+            syncViewportHeight();
+            updateMobileOrientationGate();
+        });
+        window.visualViewport?.addEventListener('resize', () => {
+            syncViewportHeight();
+            updateMobileOrientationGate();
+        });
+        window.addEventListener('resize', updateMobileOrientationGate);
+        document.addEventListener('pointerdown', () => {
+            tryEnterImmersiveMobileMode();
+        }, { passive: true });
 
         settings = getSavedSettings();
         currentLang = settings.language;
