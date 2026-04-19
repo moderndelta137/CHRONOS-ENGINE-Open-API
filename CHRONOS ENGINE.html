@@ -987,11 +987,79 @@
         /* Tutorial Effects */
         .tutorial-highlight {
             position: relative !important;
-            z-index: 345 !important;
+            z-index: 380 !important;
             box-shadow: 0 0 0 2px var(--tm-bg), 0 0 0 4px var(--tm-highlight), 0 0 30px var(--tm-highlight) !important;
             background-color: var(--tm-panel) !important;
+            color: var(--tm-text) !important;
+            border-color: var(--tm-highlight) !important;
+            opacity: 1 !important;
+            filter: none !important;
             border-radius: 4px;
             transition: all 0.3s ease;
+        }
+
+        button.tutorial-highlight,
+        select.tutorial-highlight,
+        input.tutorial-highlight {
+            background-color: rgba(205, 127, 50, 0.08) !important;
+            box-shadow: 0 0 0 1px rgba(205, 127, 50, 0.5), 0 0 18px rgba(205, 127, 50, 0.22) !important;
+        }
+
+        button.tutorial-highlight,
+        select.tutorial-highlight,
+        input.tutorial-highlight,
+        .tutorial-highlight,
+        .tutorial-highlight * {
+            color: var(--tm-text) !important;
+            opacity: 1 !important;
+            filter: none !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.08), 0 0 16px var(--tm-shadow) !important;
+        }
+
+        #tutorial-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 335;
+            background: transparent !important;
+            pointer-events: none;
+        }
+
+        #tutorial-spotlight {
+            position: fixed;
+            z-index: 340;
+            pointer-events: none;
+            border-radius: 6px;
+            background: transparent;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--tm-highlight);
+            outline: 1px solid rgba(255, 255, 255, 0.08);
+            outline-offset: 0;
+            transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #tutorial-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 390;
+            width: min(90vw, 32rem);
+            max-width: min(90vw, 32rem);
+        }
+
+        #tutorial-dialog .tutorial-copy {
+            font-size: clamp(1.2rem, 1.1rem + 0.45vw, 1.7rem);
+            line-height: 1.45;
+        }
+
+        #tutorial-dialog .tutorial-accent {
+            color: var(--tm-highlight);
+            text-shadow: 0 0 12px var(--tm-shadow);
+            font-weight: 700;
+        }
+
+        #tutorial-dialog .tutorial-actions button {
+            font-size: 1.2rem;
         }
 
         .hidden {
@@ -1489,13 +1557,14 @@
     <div id="global-tooltip"></div>
 
     <div id="tutorial-overlay" class="hidden fixed inset-0 bg-black/80 z-[335] transition-opacity"></div>
+    <div id="tutorial-spotlight" class="hidden"></div>
 
     <!-- TUTORIAL DIALOG -->
     <div id="tutorial-dialog" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md z-[360] bg-sys-panel border-2 border-sys-highlight p-6 flex flex-col text-left shadow-[0_0_30px_var(--tm-shadow)] backdrop-blur-md">
-        <div id="tutorial-text" class="text-sys-text text-lg md:text-xl mb-6 whitespace-pre-wrap leading-relaxed">...</div>
-        <div class="flex justify-between border-t border-sys-border pt-4">
-            <button id="btn-tutorial-skip" class="text-sys-dim hover:text-sys-text transition-colors font-bold cursor-pointer text-xl tracking-widest">[ SKIP TUTORIAL >> ]</button>
-            <button id="btn-tutorial-next" class="text-sys-highlight hover:text-white transition-colors font-bold cursor-pointer text-xl tracking-widest">[ NEXT > ]</button>
+        <div id="tutorial-text" class="tutorial-copy text-sys-text mb-6 whitespace-pre-wrap text-left flex-1">...</div>
+        <div class="tutorial-actions flex justify-between mt-8 border-t border-sys-border pt-4 shrink-0">
+            <button id="btn-tutorial-skip" class="text-sys-dim hover:text-sys-text transition-colors font-bold cursor-pointer">[ SKIP TUTORIAL >> ]</button>
+            <button id="btn-tutorial-next" class="text-sys-highlight hover:text-white transition-colors font-bold cursor-pointer flicker">[ NEXT > ]</button>
         </div>
     </div>
 
@@ -2695,21 +2764,49 @@
 
         const agentRoster = [
             { name: "KESSLER", trait: "METHODICAL", specialty: "Forensic Analyst",
+              personality: {
+                  codename: "The Dry Professional",
+                  summary: "Calm, razor-focused, and quietly witty under pressure.",
+                  voice: "Speaks with measured precision and dry humor. Uses concise observations, subtle irony, and a reassuringly controlled tone even in danger.",
+                  quirks: ["Makes understated jokes when the situation is grim", "Frames risks like a forensic report", "Sounds composed and quietly confident"],
+                  operatorBond: "Treats the operator like a respected partner and occasionally slips in understated personal trust."
+              },
               skills: [{name: "Hacking", description: "Bypass electronic locks and encrypted data systems."}, {name: "Forensics", description: "Analyze physical evidence for hidden clues and temporal traces."}],
               inventory: [{name: "Chronal Scanner", description: "Detects temporal anomalies and evaluates Divergence shifts."}, {name: "Silenced Pistol", description: "Standard issue firearm for quiet kinetic elimination."}],
               lore: {}
             },
             { name: "VANCE", trait: "BRUTE-FORCE", specialty: "Heavy Munitions",
+              personality: {
+                  codename: "The Cannonball",
+                  summary: "Hot-blooded, fearless, and impossible to intimidate.",
+                  voice: "Speaks in blunt, aggressive bursts with swagger and battlefield bravado. Sounds brave, impatient, and eager to smash through obstacles.",
+                  quirks: ["Cracks combat jokes and taunts danger", "Talks like every problem has a front door to kick in", "Can sound fiercely protective of the operator when things go bad"],
+                  operatorBond: "Talks to the operator like a trusted handler in the middle of a firefight, with rough-edged loyalty."
+              },
               skills: [{name: "CQC", description: "Advanced close-quarters combat proficiency."}, {name: "Explosives", description: "Expertise in crafting and disarming explosive devices."}],
               inventory: [{name: "Breaching Charge", description: "High-yield explosive for destroying reinforced barriers."}, {name: "Assault Rifle", description: "High-capacity kinetic weapon for heavy engagements."}],
               lore: {}
             },
             { name: "CHEN", trait: "STEALTH", specialty: "Covert Infiltrator",
+              personality: {
+                  codename: "The Ghost",
+                  summary: "Elegant, observant, and quietly intimate in the way only a shadow can be.",
+                  voice: "Speaks softly and precisely with minimal words. Feels intensely focused, perceptive, and almost whisper-close to the operator.",
+                  quirks: ["Notices tiny sensory details others would miss", "Uses cool, surgical phrasing", "Occasionally delivers surprisingly personal remarks in a hushed tone"],
+                  operatorBond: "Communicates like the operator is the only voice in the dark worth listening to."
+              },
               skills: [{name: "Infiltration", description: "Ability to bypass security perimeters undetected."}, {name: "Acrobatics", description: "High mobility for reaching inaccessible areas."}],
               inventory: [{name: "Lockpicks", description: "Mechanical tools for bypassing physical locks."}, {name: "Smoke Grenades", description: "Creates visual cover for evasion or ambush."}],
               lore: {}
             },
             { name: "NOVA", trait: "SOCIAL", specialty: "CIA Operative",
+              personality: {
+                  codename: "The Charmer",
+                  summary: "Smooth, playful, and dangerously charismatic.",
+                  voice: "Speaks with warmth, wit, and confidence. Flirts with risk, makes clever jokes, and keeps the operator engaged with a highly personable tone.",
+                  quirks: ["Enjoys wordplay and teasing banter", "Can pivot instantly from charming to coldly professional", "Treats social manipulation like stagecraft"],
+                  operatorBond: "Builds easy chemistry with the operator and sounds the most openly conversational of the team."
+              },
               skills: [{name: "Persuasion", description: "Manipulate targets through conversation and psychological tactics."}, {name: "Disguise", description: "Assume false identities to blend into hostile environments."}],
               inventory: [{name: "Forged Credentials", description: "Fake identification documents to bypass checkpoints."}, {name: "Truth Serum", description: "Chemical agent to force targets to reveal critical intel."}],
               lore: {}
@@ -2875,6 +2972,10 @@
                 statusExtracted: "EXTRACTED", statusKIA: "K.I.A.",
                 ejectInit: "[ SYSTEM: EMERGENCY EXTRACTION SEQUENCE INITIATED... ]",
                 partingWords: {
+                    "KESSLER": "Extraction confirmed. Leave the noise behind me, operator.",
+                    "VANCE": "Now we're talking. Dragging the whole firefight into the dark with me.",
+                    "CHEN": "I'm gone before the echo catches up. Stay on the line.",
+                    "NOVA": "Clean exit. Try not to miss me before the next paradox.",
                     "METHODICAL": "Extraction confirmed. Erasing chronal footprints.",
                     "BRUTE-FORCE": "About time. Pulling out hot.",
                     "STEALTH": "Fading to ghosts. See you on the other side.",
@@ -2933,7 +3034,7 @@
                 aiTut1: "AI CONNECTION\nThis panel is where you configure the model that drives mission narration and state updates. You only need to set it up once on this device.",
                 aiTut2: "PLAYER API KEY\nPaste your Gemini API key here first. The game stores it only in this browser so you can keep using your own account.",
                 aiTut3: "REFRESH MODELS\nAfter pasting the key, press REFRESH MODELS to query Gemini and load the models your API key can actually use.",
-                aiTut4: "MODEL NAME\nPick the model you want from this list after the refresh finishes. Choose the exact model you want the game to call during missions.",
+                aiTut4: "MODEL NAME\nPick the model you want from this list after the refresh finishes. I recommend using <span class=\"tutorial-accent\">gemini-flash-lite-latest</span> for the smoothest setup.",
                 aiTut5: "TEST CONNECTION\nPress TEST CONNECTION last to verify the selected key and model can generate a valid response before you start playing.",
                 tutBtn: "[ ACKNOWLEDGE ]",
                 tutSkip: "[ SKIP >> ]",
@@ -2948,6 +3049,10 @@
                 statusExtracted: "帰還完了", statusKIA: "K.I.A. (戦死)",
                 ejectInit: "[ システム: 緊急帰還シークエンス起動... ]",
                 partingWords: {
+                    "KESSLER": "帰還を確認。残るノイズは置いていく、オペレーター。",
+                    "VANCE": "そうこなくちゃな。銃声ごと闇に引きずって帰る。",
+                    "CHEN": "残響が追いつく前に消える。回線はそのままで。",
+                    "NOVA": "綺麗に離脱完了。次のパラドックスまで寂しがらないで。",
                     "METHODICAL": "帰還を確認。時間軸の痕跡を消去する。",
                     "BRUTE-FORCE": "やっとか。強行離脱する。",
                     "STEALTH": "ゴーストに戻る。向こう側で会おう。",
@@ -3003,6 +3108,11 @@
                 tut3: "マスターターミナル\nこのインターフェースでコマンドを発行します。事前計算されたアクションを選択するか、マニュアルオーバーライドで自由に入力できます。",
                 tut4: "FDL耐久値\n2038年の地下バンカーは攻撃を受けています。このゲージはリアルタイムで減少します。タイムラインを修正する前に0%になると、我々は全滅します。",
                 tut5: "ダイバージェンス\nタイムラインの改変度合いです。目標値に一致させるのがあなたの目的です。オレンジ色のネクサス・キーワードに干渉すると大きく変動します。",
+                aiTut1: "AI CONNECTION\nこのパネルで、ミッション中の描写と状態更新に使うモデルを設定します。この端末では一度設定すれば十分です。",
+                aiTut2: "PLAYER API KEY\nまずここに Gemini の API キーを貼り付けてください。キーはこのブラウザ内だけに保存されるので、自分のアカウントをそのまま使えます。",
+                aiTut3: "REFRESH MODELS\nキーを貼り付けたら REFRESH MODELS を押してください。あなたの API キーで実際に使えるモデル一覧を読み込みます。",
+                aiTut4: "MODEL NAME\n更新後にこの一覧から使いたいモデルを選んでください。最初は <span class=\"tutorial-accent\">gemini-flash-lite-latest</span> を使うのがおすすめです。",
+                aiTut5: "TEST CONNECTION\n最後に TEST CONNECTION を押して、選んだキーとモデルで正常に応答できることを確認してからゲームを始めてください。",
                 tutBtn: "[ 確認 ]",
                 tutSkip: "[ スキップ >> ]",
                 resetData: "[ セーブデータ消去 ]",
@@ -3016,6 +3126,10 @@
                 statusExtracted: "已撤离", statusKIA: "K.I.A. (阵亡)",
                 ejectInit: "[ 系统: 紧急撤离程序已启动... ]",
                 partingWords: {
+                    "KESSLER": "确认撤离。把噪声留在我身后吧，操作员。",
+                    "VANCE": "这才像话。我会把整场交火一起拖进黑暗里。",
+                    "CHEN": "回声追上来之前我就会消失。保持线路畅通。",
+                    "NOVA": "撤离得很漂亮。下次悖论开始前，可别太想我。",
                     "METHODICAL": "确认撤离。正在清除时间痕迹。",
                     "BRUTE-FORCE": "早该如此。强行撤离。",
                     "STEALTH": "隐入幽灵。我们在另一边见。",
@@ -3071,6 +3185,11 @@
                 tut3: "主终端\n使用此界面发布命令。您可以选择预先计算的行动，或使用手动覆盖输入自定义指令。",
                 tut4: "FDL完整度\n我们2038年的地下掩体正在遭受攻击。此量表会实时消耗。如果在您修复时间线之前降至0%，我们将全部阵亡。",
                 tut5: "分歧率\n时间线改变的量度。您的目标是达到目标值。与橙色的核心节点（Nexus）关键字互动将大幅改变此数值。",
+                aiTut1: "AI CONNECTION\n这个面板用于设置驱动任务叙述与状态更新的模型。在这台设备上通常只需要设置一次。",
+                aiTut2: "PLAYER API KEY\n先把你的 Gemini API Key 粘贴到这里。游戏只会把它保存在当前浏览器中，所以你可以继续使用自己的账号。",
+                aiTut3: "REFRESH MODELS\n粘贴好密钥后，点击 REFRESH MODELS。这样就会读取这个 API Key 实际可用的模型列表。",
+                aiTut4: "MODEL NAME\n刷新完成后，在这里选择你要使用的模型。第一次设置时，我推荐使用 <span class=\"tutorial-accent\">gemini-flash-lite-latest</span>。",
+                aiTut5: "TEST CONNECTION\n最后点击 TEST CONNECTION，确认当前选择的密钥和模型能够正常生成响应，然后再开始游戏。",
                 tutBtn: "[ 确认 ]",
                 tutSkip: "[ 跳过 >> ]",
                 resetData: "[ 重置进度 ]",
@@ -3498,7 +3617,7 @@
 
         async function closeSettingsModal() {
             if (state.tutorialActive && activeTutorialType === 'ai-setup') {
-                endTutorial();
+                return;
             }
             document.getElementById('settings-modal')?.classList.add('hidden');
             document.getElementById('settings-modal')?.classList.remove('flex');
@@ -4144,7 +4263,14 @@
                 name: "---", trait: "---", specialty: "---",
                 hp: 100, max_hp: 100, base_max_hp: 100,
                 ap: 100, max_ap: 100,
-                skills: [], inventory: [], lore: {}
+                skills: [], inventory: [], lore: {},
+                personality: {
+                    codename: "---",
+                    summary: "---",
+                    voice: "---",
+                    quirks: [],
+                    operatorBond: "---"
+                }
             },
             
             intel: [],
@@ -4159,6 +4285,16 @@
         let currentDisplayedDiv = 0.000000;
         let divAnimFrame = null;
 
+        function cloneAgentPersonality(personality = null) {
+            return {
+                codename: personality?.codename || "---",
+                summary: personality?.summary || "---",
+                voice: personality?.voice || "---",
+                quirks: Array.isArray(personality?.quirks) ? [...personality.quirks] : [],
+                operatorBond: personality?.operatorBond || "---"
+            };
+        }
+
         function draftNewAgent() {
             const template = agentRoster[Math.floor(Math.random() * agentRoster.length)];
             state.agent.name = template.name;
@@ -4167,6 +4303,7 @@
             state.agent.skills = [...template.skills];
             state.agent.inventory = [...template.inventory];
             state.agent.lore = template.lore;
+            state.agent.personality = cloneAgentPersonality(template.personality);
             // Base scaled to 100 to sync precisely with AP tracking
             state.agent.base_max_hp = 100; state.agent.max_hp = 100; state.agent.hp = 100;
             state.agent.max_ap = 100; state.agent.ap = 100;
@@ -4209,6 +4346,7 @@
             btnCloseIntel: document.getElementById('btn-close-intel'),
             intelModal: document.getElementById('intel-modal'),
             tutorialOverlay: document.getElementById('tutorial-overlay'),
+            tutorialSpotlight: document.getElementById('tutorial-spotlight'),
             tutorialDialog: document.getElementById('tutorial-dialog'),
             tutorialText: document.getElementById('tutorial-text'),
             btnTutorialNext: document.getElementById('btn-tutorial-next'),
@@ -4235,6 +4373,7 @@
             if (els.optionsMenu) els.optionsMenu.classList.add('hidden');
             if (els.intelModal) els.intelModal.classList.add('hidden');
             if (els.tutorialOverlay) els.tutorialOverlay.classList.add('hidden');
+            if (els.tutorialSpotlight) els.tutorialSpotlight.classList.add('hidden');
             if (els.tutorialDialog) els.tutorialDialog.classList.add('hidden');
             document.body.style.animation = "";
             activeScreenId = 'title-screen';
@@ -4329,6 +4468,116 @@
         let currentTutorialStep = 0;
         let activeTutorialSequence = missionTutorialSequence;
         let activeTutorialType = 'mission';
+        let tutorialAnchorId = null;
+
+        function animateTutorialDialog(direction = 'in', onComplete = null) {
+            if (!els.tutorialDialog) {
+                if (typeof onComplete === 'function') onComplete();
+                return;
+            }
+
+            const classToAdd = direction === 'out' ? 'panel-flicker-out' : 'panel-flicker-in';
+            const classToRemove = direction === 'out' ? 'panel-flicker-in' : 'panel-flicker-out';
+            const duration = direction === 'out' ? 200 : 250;
+
+            els.tutorialDialog.classList.remove(classToRemove);
+            void els.tutorialDialog.offsetWidth;
+            els.tutorialDialog.classList.add(classToAdd);
+
+            setTimeout(() => {
+                els.tutorialDialog?.classList.remove(classToAdd);
+                if (typeof onComplete === 'function') onComplete();
+            }, duration);
+        }
+
+        function positionTutorialSpotlight(targetEl = null) {
+            if (!els.tutorialSpotlight) return;
+
+            if (!targetEl) {
+                els.tutorialSpotlight.classList.add('hidden');
+                return;
+            }
+
+            const rect = targetEl.getBoundingClientRect();
+            const isControlTarget = targetEl.matches('button, input, select, textarea');
+            const padding = isControlTarget ? 18 : 10;
+            const top = Math.max(8, rect.top - padding);
+            const left = Math.max(8, rect.left - padding);
+            const width = Math.min(window.innerWidth - left - 8, rect.width + padding * 2);
+            const height = Math.min(window.innerHeight - top - 8, rect.height + padding * 2);
+
+            els.tutorialSpotlight.style.top = `${top}px`;
+            els.tutorialSpotlight.style.left = `${left}px`;
+            els.tutorialSpotlight.style.width = `${width}px`;
+            els.tutorialSpotlight.style.height = `${height}px`;
+            els.tutorialSpotlight.classList.remove('hidden');
+        }
+
+        function positionTutorialDialog(targetEl = null) {
+            if (!els.tutorialDialog) return;
+
+            const dialog = els.tutorialDialog;
+            const viewportPadding = window.innerWidth < 768 ? 16 : 24;
+            const gap = window.innerWidth < 768 ? 12 : 20;
+
+            dialog.style.top = '50%';
+            dialog.style.left = '50%';
+            dialog.style.right = 'auto';
+            dialog.style.bottom = 'auto';
+            dialog.style.transform = 'translate(-50%, -50%)';
+
+            if (!targetEl || window.innerWidth < 900) {
+                return;
+            }
+
+            const targetRect = targetEl.getBoundingClientRect();
+            const dialogRect = dialog.getBoundingClientRect();
+            const dialogWidth = dialogRect.width;
+            const dialogHeight = dialogRect.height;
+
+            let left = targetRect.right + gap;
+            let top = targetRect.top + Math.max(0, (targetRect.height - dialogHeight) / 2);
+
+            const fitsRight = left + dialogWidth <= window.innerWidth - viewportPadding;
+            const fitsLeft = targetRect.left - gap - dialogWidth >= viewportPadding;
+
+            if (!fitsRight && fitsLeft) {
+                left = targetRect.left - gap - dialogWidth;
+            } else if (!fitsRight) {
+                const belowTop = targetRect.bottom + gap;
+                const aboveTop = targetRect.top - gap - dialogHeight;
+
+                if (belowTop + dialogHeight <= window.innerHeight - viewportPadding) {
+                    left = Math.min(
+                        window.innerWidth - dialogWidth - viewportPadding,
+                        Math.max(viewportPadding, targetRect.left + (targetRect.width - dialogWidth) / 2)
+                    );
+                    top = belowTop;
+                } else if (aboveTop >= viewportPadding) {
+                    left = Math.min(
+                        window.innerWidth - dialogWidth - viewportPadding,
+                        Math.max(viewportPadding, targetRect.left + (targetRect.width - dialogWidth) / 2)
+                    );
+                    top = aboveTop;
+                } else {
+                    return;
+                }
+            }
+
+            top = Math.min(window.innerHeight - dialogHeight - viewportPadding, Math.max(viewportPadding, top));
+            left = Math.min(window.innerWidth - dialogWidth - viewportPadding, Math.max(viewportPadding, left));
+
+            dialog.style.top = `${top}px`;
+            dialog.style.left = `${left}px`;
+            dialog.style.transform = 'none';
+        }
+
+        function refreshTutorialAnchorPosition() {
+            if (!state.tutorialActive) return;
+            const anchorEl = tutorialAnchorId ? document.getElementById(tutorialAnchorId) : null;
+            positionTutorialSpotlight(anchorEl);
+            positionTutorialDialog(anchorEl);
+        }
 
         function startTutorial(sequence = missionTutorialSequence, type = 'mission') {
             activeTutorialSequence = sequence;
@@ -4363,21 +4612,36 @@
             
             if (targetEl) {
                 targetEl.classList.add('tutorial-highlight');
-                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' });
+                tutorialAnchorId = step.el;
+            } else {
+                tutorialAnchorId = null;
             }
 
             const t = { ...i18n.en, ...(i18n[currentLang] || {}) };
-            els.tutorialText.innerText = t[step.textKey];
+            els.tutorialText.innerHTML = t[step.textKey];
             els.btnTutorialNext.innerText = (currentTutorialStep === activeTutorialSequence.length - 1) ? t.tutBtn : "[ NEXT > ]";
+            requestAnimationFrame(() => {
+                refreshTutorialAnchorPosition();
+                animateTutorialDialog('in');
+            });
+            setTimeout(() => {
+                refreshTutorialAnchorPosition();
+            }, 80);
+            setTimeout(() => {
+                refreshTutorialAnchorPosition();
+            }, 180);
         }
 
         function endTutorial() {
             state.tutorialActive = false;
             if (els.tutorialOverlay) els.tutorialOverlay.classList.add('hidden');
+            if (els.tutorialSpotlight) els.tutorialSpotlight.classList.add('hidden');
             if (els.tutorialDialog) els.tutorialDialog.classList.add('hidden');
             document.querySelectorAll('.tutorial-highlight').forEach(el => {
                 el.classList.remove('tutorial-highlight');
             });
+            tutorialAnchorId = null;
             if (activeTutorialType === 'mission') {
                 localStorage.setItem('chronos_tutorial_done', 'true');
                 if (els.cmdInput) els.cmdInput.disabled = false;
@@ -4389,8 +4653,10 @@
         els.btnTutorialSkip?.addEventListener('click', endTutorial);
 
         els.btnTutorialNext?.addEventListener('click', () => {
-            currentTutorialStep++;
-            showTutorialStep();
+            animateTutorialDialog('out', () => {
+                currentTutorialStep++;
+                showTutorialStep();
+            });
         });
 
 
@@ -5024,10 +5290,17 @@
             const divergenceInstruction = mData.type === 'side' 
                 ? `DIVERGENCE IMPACT: You are in a Side Quest Anomaly. Interacting with the Nexus Targets (<span class='kw-nexus'>) correctly MUST cause massive arbitrary divergence shifts (e.g., +/- 0.1 to 0.4) as the agent destabilizes the timeline.`
                 : `DIVERGENCE IMPACT: Interacting with the Nexus Targets (<span class='kw-nexus'>) correctly MUST cause MASSIVE divergence shifts (e.g., 0.1 to 0.4) moving closer to the Target Divergence (${state.targetDivergence.toFixed(6)}). Wrong actions push it away.`;
+            const personality = state.agent.personality || cloneAgentPersonality();
+            const personalityQuirks = personality.quirks.length ? personality.quirks.join('; ') : 'None';
 
             const systemInstruction = `
 You are playing the role of field agent: ${state.agent.name}.
 Trait: ${state.agent.trait}. Specialty: ${state.agent.specialty}.
+Personality Codename: ${personality.codename}.
+Personality Summary: ${personality.summary}
+Voice Rules: ${personality.voice}
+Signature Quirks: ${personalityQuirks}
+Operator Bond: ${personality.operatorBond}
 You are communicating via a terminal text link to your operator in the future (2038).
 STATE: Divergence: ${state.divergence.toFixed(6)}, HQ Health: ${state.fdl_health.toFixed(1)}%, HP: ${state.agent.hp}/100, AP: ${state.agent.ap}/100, Loc: ${state.currentNode}.
 Target: ${mData.year} ${mData.loc}. Objective: ${state.objective}.
@@ -5039,6 +5312,8 @@ LANGUAGE MANDATE: The user interface is set to ${currentLang === 'ja' ? 'Japanes
 You MUST translate all output fields (narrative_response, action_text, inventory names/descriptions, intel_acquired) into this language. Ensure tooltips are also translated!
 IMPORTANT INSTRUCTIONS FOR YOUR NARRATIVE RESPONSE:
 - Write in the FIRST PERSON perspective as a terse, direct message back to the operator.
+- PERSONALITY: Stay recognizably in character at all times. Let this agent's personality shape word choice, rhythm, humor, confidence, intimacy, and emotional texture without breaking mission plausibility.
+- PERSONALITY DIFFERENTIATION: Different agents should feel clearly distinct from one another. A hot-blooded operative should not sound like a stealth whisper specialist, and a playful charmer should not sound like a dry forensic analyst.
 - GAMEPLAY DESIGN: Hide objective targets in nearby plausible locations based on the briefing. If the player investigates the WRONG location, give them a subtle hint directing them to the correct one.
 - ${divergenceInstruction}
 - AP ECONOMY: Keep AP costs lean. Most standard actions should feel about half as expensive as a harsh tactical sim. Recon, movement, and observation should usually be low-cost unless the action is unusually dangerous or complex.
@@ -5203,7 +5478,8 @@ Return JSON matching schema.`;
             audioEngine.playExtraction();
             await printToTerminal(i18n[currentLang].ejectInit, "vital-log", "var(--bar-hp)");
             
-            const partingWords = i18n[currentLang].partingWords[state.agent.trait] || "...";
+            const localizedPartingWords = i18n[currentLang].partingWords || {};
+            const partingWords = localizedPartingWords[state.agent.name] || localizedPartingWords[state.agent.trait] || "...";
             await new Promise(r => setTimeout(r, 600));
             await printToTerminal(partingWords, "ai");
             
@@ -5635,8 +5911,14 @@ Return JSON matching schema.`;
         });
 
         document.getElementById('btn-open-settings')?.addEventListener('click', openSettingsModal);
-        document.getElementById('btn-close-settings')?.addEventListener('click', closeSettingsModal);
-        document.getElementById('settings-backdrop')?.addEventListener('click', closeSettingsModal);
+        document.getElementById('btn-close-settings')?.addEventListener('click', async () => {
+            if (state.tutorialActive && activeTutorialType === 'ai-setup') return;
+            await closeSettingsModal();
+        });
+        document.getElementById('settings-backdrop')?.addEventListener('click', async () => {
+            if (state.tutorialActive && activeTutorialType === 'ai-setup') return;
+            await closeSettingsModal();
+        });
         document.getElementById('btn-ai-setup-tutorial')?.addEventListener('click', startAiSetupTutorial);
         document.getElementById('btn-refresh-models')?.addEventListener('click', () => {
             const apiKey = document.getElementById('settings-api-key')?.value.trim() || getConfiguredApiKey();
@@ -5692,7 +5974,10 @@ Return JSON matching schema.`;
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeSettingsModal();
+            if (e.key === 'Escape') {
+                if (state.tutorialActive && activeTutorialType === 'ai-setup') return;
+                closeSettingsModal();
+            }
         });
 
         document.addEventListener('pointerdown', () => {
@@ -5700,6 +5985,14 @@ Return JSON matching schema.`;
             titleBgmUnlocked = true;
             syncBgmPlayback();
         }, { once: true });
+
+        window.addEventListener('resize', () => {
+            refreshTutorialAnchorPosition();
+        });
+
+        document.querySelector('#settings-modal .settings-shell')?.addEventListener('scroll', () => {
+            refreshTutorialAnchorPosition();
+        });
 
         document.addEventListener('mouseover', (e) => {
             const interactive = e.target.closest('button, .btn-theme-toggle, .lang-btn, #input-trigger');
