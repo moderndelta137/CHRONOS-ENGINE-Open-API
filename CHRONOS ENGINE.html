@@ -4,25 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CHRONOS ENGINE - Master Terminal</title>
-    <!-- Tailwind CSS for utility classes -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sys-text': 'var(--tm-text)',
-                        'sys-dim': 'var(--tm-dim)',
-                        'sys-border': 'var(--tm-border)',
-                        'sys-bg': 'var(--tm-bg)',
-                        'sys-panel': 'var(--tm-panel)',
-                        'sys-highlight': 'var(--tm-highlight)',
-                        'nixie': 'var(--nixie-color)',
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="assets/styles/tailwind.generated.css">
     <style>
         /* Dynamic Theme Variables */
         :root {
@@ -162,16 +144,22 @@
 
         /* Screen container */
         #screen-container {
+            position: fixed;
+            inset: 0;
             width: 100%;
-            height: 100%;
+            min-height: var(--app-height);
+            min-height: 100dvh;
+            height: var(--app-height);
+            max-height: var(--app-height);
             padding: 1rem;
             display: flex;
             flex-direction: column;
-            z-index: 10;
-            position: relative;
+            z-index: 150;
+            background-color: var(--tm-bg);
             text-shadow: 1px 0px 1px rgba(255, 0, 0, 0.3), -1px 0px 1px rgba(0, 255, 255, 0.3);
             transform: scale(0.99) rotateX(0.5deg);
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         @media (min-width: 1024px) {
@@ -466,9 +454,15 @@
         }
 
         #timeline-screen {
+            position: fixed;
+            inset: 0;
             width: 100%;
             min-height: var(--app-height);
             min-height: 100dvh;
+            height: var(--app-height);
+            max-height: var(--app-height);
+            z-index: 200;
+            box-sizing: border-box;
         }
 
         @media (max-width: 767px) {
@@ -502,7 +496,9 @@
             }
 
             #timeline-screen {
-                height: auto;
+                min-height: var(--app-height);
+                min-height: 100dvh;
+                height: var(--app-height);
                 padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
                 overflow-y: auto;
             }
@@ -510,6 +506,8 @@
             #screen-container {
                 min-height: var(--app-height);
                 min-height: 100dvh;
+                height: var(--app-height);
+                max-height: var(--app-height);
                 padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
                 overflow-y: auto;
                 overflow-x: hidden;
@@ -801,6 +799,14 @@
             z-index: 10;
             box-shadow: 0 4px 6px rgba(0,0,0,0.5);
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            font: inherit;
+            padding: 0;
+            text-align: left;
+        }
+        #timeline-tree > :not(.nexus-node) {
+            pointer-events: none;
         }
         .nexus-node .node-header {
             background: rgba(255,255,255,0.05);
@@ -914,6 +920,7 @@
             transform: translate(-50%, -50%);
             z-index: 30;
             box-shadow: 0 0 10px var(--nixie-color), 0 0 20px var(--nixie-color);
+            pointer-events: none;
         }
         .player-dot::after {
             content: '';
@@ -922,6 +929,7 @@
             border: 2px solid var(--nixie-color);
             border-radius: 50%;
             animation: radar-ping 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            pointer-events: none;
         }
         @keyframes radar-ping {
             0% { transform: scale(1); opacity: 1; }
@@ -1004,7 +1012,7 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
                 <div class="panel">
                     <div class="panel-header" id="settings-display-title">Display & Interface</div>
                     <label class="text-sys-dim text-sm mb-2" for="settings-theme-select" id="settings-theme-label">Theme Preset</label>
@@ -1056,12 +1064,35 @@
                     </div>
                     <div id="settings-api-status" class="text-sys-dim text-sm mt-4">No API key configured.</div>
                 </div>
+
+                <div class="panel">
+                    <div class="text-sys-dim text-sm mb-3 font-bold tracking-widest" id="settings-audio-title">AUDIO</div>
+                    <label class="flex items-center justify-between gap-4 text-sys-text mb-4" for="settings-audio-enabled">
+                        <span id="settings-audio-enabled-label">Enable procedural sound effects</span>
+                        <input id="settings-audio-enabled" type="checkbox" class="h-4 w-4 accent-[var(--tm-highlight)] shrink-0">
+                    </label>
+                    <label class="block text-sys-dim text-sm mb-2" for="settings-se-volume" id="settings-se-volume-label">SE Volume</label>
+                    <input id="settings-se-volume" type="range" min="0" max="100" step="1" class="w-full accent-[var(--tm-highlight)] mb-2">
+                    <div id="settings-se-volume-value" class="text-sys-text text-sm mb-4">100%</div>
+                    <label class="block text-sys-dim text-sm mb-2" for="settings-bgm-volume" id="settings-bgm-volume-label">BGM Volume</label>
+                    <input id="settings-bgm-volume" type="range" min="0" max="100" step="1" class="w-full accent-[var(--tm-highlight)] mb-2">
+                    <div id="settings-bgm-volume-value" class="text-sys-text text-sm mb-2">70%</div>
+                    <div class="text-sys-dim text-xs">Procedural sound effects and screen-specific background music.</div>
+                </div>
             </div>
 
             <div class="panel mt-5">
                 <div class="panel-header" id="settings-runtime-title">Runtime Controls</div>
                 <div class="text-sys-dim text-sm leading-relaxed mb-4" id="settings-runtime-help">
                     Save changes before starting a mission. Language changes update the interface immediately.
+                </div>
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <button id="btn-return-mission-select" class="border border-sys-border text-sys-dim px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">
+                        [ RETURN TO MISSION SELECT ]
+                    </button>
+                    <button id="btn-return-title" class="border border-sys-border text-sys-dim px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">
+                        [ RETURN TO TITLE SCREEN ]
+                    </button>
                 </div>
                 <div class="flex flex-wrap gap-3">
                     <button id="btn-save-settings" class="border-2 border-sys-highlight text-black bg-sys-highlight px-5 py-2 hover:bg-white hover:border-white transition-colors font-bold cursor-pointer shadow-[0_0_15px_var(--tm-shadow)]">
@@ -1070,6 +1101,26 @@
                     <button id="btn-reset-settings-defaults" class="border border-sys-border text-sys-dim px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">
                         [ RESET DEFAULTS ]
                     </button>
+                </div>
+
+                <div class="border-t border-sys-border/70 mt-5 pt-5">
+                    <div class="text-sys-dim text-sm mb-3 font-bold tracking-widest">DEBUG SOUND TEST</div>
+                    <div class="text-sys-dim text-xs mb-4">Play individual sound effects directly from the options menu.</div>
+                    <div id="se-debug-list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                        <button data-se-debug="hover" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ HOVER ]</button>
+                        <button data-se-debug="click" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ BUTTON PRESS ]</button>
+                        <button data-se-debug="system" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ SYSTEM TYPE ]</button>
+                        <button data-se-debug="operator" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ OPERATOR TYPE ]</button>
+                        <button data-se-debug="ai" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ AI TYPE ]</button>
+                        <button data-se-debug="nixie" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ NIXIE TICK ]</button>
+                        <button data-se-debug="switch" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ CHANNEL SWITCH ]</button>
+                        <button data-se-debug="fdl-small" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ FDL HIT SMALL ]</button>
+                        <button data-se-debug="fdl-large" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ FDL HIT LARGE ]</button>
+                        <button data-se-debug="extract" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ EXTRACTION ]</button>
+                        <button data-se-debug="success" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ RESULT SUCCESS ]</button>
+                        <button data-se-debug="failure" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">[ RESULT FAILURE ]</button>
+                        <button data-se-debug="gameover" class="border border-sys-border text-sys-dim px-3 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer sm:col-span-2 xl:col-span-3">[ GAME OVER ]</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1455,9 +1506,14 @@
                 <div id="mission-objective" class="text-yellow-500 font-bold text-lg lg:text-xl mt-1 mb-2 leading-tight flex-1 overflow-y-auto" style="scrollbar-width: thin;">
                     ...
                 </div>
-                <button id="btn-intel" class="w-full mt-auto shrink-0 border border-sys-highlight bg-sys-highlight/20 text-sys-text px-4 py-3 lg:py-2 hover:bg-sys-highlight hover:text-black transition-colors cursor-pointer font-bold text-base lg:text-lg tracking-widest" data-tooltip="Access gathered intelligence">
-                    [ INTEL ARCHIVE ]
-                </button>
+                <div class="mt-auto shrink-0 grid grid-cols-2 gap-2">
+                    <button id="btn-intel" class="w-full border border-sys-highlight bg-sys-highlight/20 text-sys-text px-4 py-3 lg:py-2 hover:bg-sys-highlight hover:text-black transition-colors cursor-pointer font-bold text-base lg:text-lg tracking-widest" data-tooltip="Access gathered intelligence">
+                        [ INTEL ARCHIVE ]
+                    </button>
+                    <button id="btn-eject" class="w-full border border-red-600 bg-red-950/40 text-red-500 px-4 py-3 lg:py-2 hover:bg-red-600 hover:text-white transition-colors cursor-pointer font-bold text-base lg:text-lg tracking-widest shadow-[0_0_8px_rgba(220,38,38,0.4)]">
+                        ⏏ EJECT
+                    </button>
+                </div>
             </div>
 
             <!-- Panel 2: Agent Profile & Vitals -->
@@ -1516,7 +1572,6 @@
                 <span id="ui-terminal-title" class="truncate mr-2">>_ AION_MASTER_TERMINAL_V3.0 [GEMINI:2.5_FLASH]</span>
                 <div class="flex gap-4 items-center">
                     <span class="btn-theme-toggle cursor-pointer hover:text-sys-text whitespace-nowrap">[ THEME ]</span>
-                    <button class="border border-red-600 bg-red-950/40 text-red-500 px-3 py-1 hover:bg-red-600 hover:text-white transition-colors font-bold cursor-pointer whitespace-nowrap shadow-[0_0_8px_rgba(220,38,38,0.4)]" id="btn-eject">⏏ EJECT</button>
                 </div>
             </div>
 
@@ -1600,8 +1655,8 @@
 
     <script>
         /** --- CONFIGURATION & API --- */
-        const defaultModelName = 'gemini-2.5-flash-preview-09-2025';
-        const geminiRateLimitRpm = 10;
+        const defaultModelName = 'gemini-flash-lite-latest';
+        const geminiRateLimitRpm = 0;
         const geminiRateLimitWindowMs = 60 * 1000;
         const settingsStorageKey = 'chronos_settings_v1';
         const defaultSettings = {
@@ -1609,7 +1664,10 @@
             language: 'en',
             textSpeed: 2,
             model: defaultModelName,
-            apiKey: ''
+            apiKey: '',
+            audioEnabled: true,
+            seVolume: 100,
+            bgmVolume: 70
         };
         let settings = { ...defaultSettings };
 
@@ -1620,6 +1678,688 @@
         function syncViewportHeight() {
             const viewportHeight = window.visualViewport?.height || window.innerHeight;
             document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+        }
+
+        class ChronosAudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.masterGain = null;
+                this.noiseBuffer = null;
+                this.enabled = true;
+                this.volume = 0.7;
+                this.lastHoverAt = 0;
+                this.lastPulseAt = { ai: 0, system: 0, operator: 0 };
+                this.nixieInterval = null;
+                this.unlocked = false;
+                this.samplePlayers = this.createSamplePlayers();
+            }
+
+            createSamplePlayers() {
+                const sampleMap = {
+                    hover: ['assets/audio/se/Button_Hover.mp3'],
+                    missionClick: ['assets/audio/se/Mission_Button_Press.mp3'],
+                    fdlSmall: ['assets/audio/se/FDL_Damage_Small1.wav', 'assets/audio/se/FDL_Damage_Small2.wav'],
+                    fdlLarge: ['assets/audio/se/FDL_Damage_Large.wav']
+                };
+
+                return Object.fromEntries(
+                    Object.entries(sampleMap).map(([key, paths]) => [
+                        key,
+                        paths.map(path => {
+                            const audio = new Audio(path);
+                            audio.preload = 'auto';
+                            return audio;
+                        })
+                    ])
+                );
+            }
+
+            async unlock() {
+                if (this.unlocked) {
+                    await this.ensureContext();
+                    return;
+                }
+                await this.ensureContext();
+                this.unlocked = true;
+            }
+
+            async ensureContext() {
+                if (!this.enabled) return null;
+                try {
+                    if (!this.ctx) {
+                        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                        if (!AudioCtx) return null;
+                        this.ctx = new AudioCtx();
+                        this.masterGain = this.ctx.createGain();
+                        this.masterGain.gain.value = this.volume;
+                        this.masterGain.connect(this.ctx.destination);
+                        this.noiseBuffer = this.createNoiseBuffer();
+                    }
+                    if (this.ctx.state === 'suspended') {
+                        await this.ctx.resume();
+                    }
+                    return this.ctx;
+                } catch (error) {
+                    console.warn('Audio context is not ready yet.', error);
+                    return null;
+                }
+            }
+
+            applySettings(nextSettings = {}) {
+                this.enabled = nextSettings.audioEnabled !== false;
+                this.volume = Math.max(0, Math.min(10, ((Number(nextSettings.seVolume) || 0) / 100) * 10));
+                if (this.masterGain) {
+                    this.masterGain.gain.setTargetAtTime(this.enabled ? this.volume : 0, this.ctx.currentTime, 0.015);
+                }
+                const mediaVolume = this.enabled ? Math.max(0, Math.min(1, (Number(nextSettings.seVolume) || 0) / 100)) : 0;
+                Object.values(this.samplePlayers || {}).flat().forEach(player => {
+                    player.volume = mediaVolume;
+                });
+                if (!this.enabled) this.stopNixieRoll();
+            }
+
+            playSample(sampleKey) {
+                if (!this.enabled) return false;
+                const players = this.samplePlayers?.[sampleKey];
+                if (!players || players.length === 0) return false;
+
+                const source = players[Math.floor(Math.random() * players.length)];
+                const instance = source.cloneNode();
+                instance.volume = source.volume;
+                instance.play().catch(() => {});
+                return true;
+            }
+
+            createNoiseBuffer() {
+                const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.18, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) {
+                    data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+                }
+                return buffer;
+            }
+
+            createGainEnvelope(startTime, peak, attack, decay) {
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.0001, startTime);
+                gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, peak), startTime + attack);
+                gain.gain.exponentialRampToValueAtTime(0.0001, startTime + attack + decay);
+                gain.connect(this.masterGain);
+                return gain;
+            }
+
+            createFilteredNoise(startTime, duration, peak, filterType, frequency, q = 1) {
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = this.noiseBuffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = filterType;
+                filter.frequency.value = frequency;
+                filter.Q.value = q;
+                const gain = this.createGainEnvelope(startTime, peak, 0.001, Math.max(0.01, duration - 0.002));
+                noise.connect(filter);
+                filter.connect(gain);
+                noise.start(startTime);
+                noise.stop(startTime + duration);
+            }
+
+            createTone(startTime, {
+                type = 'triangle',
+                from = 220,
+                to = null,
+                peak = 0.05,
+                attack = 0.001,
+                decay = 0.05,
+                duration = null,
+                detune = 0
+            } = {}) {
+                const osc = this.ctx.createOscillator();
+                osc.type = type;
+                osc.detune.value = detune;
+                osc.frequency.setValueAtTime(from, startTime);
+                if (to !== null) {
+                    osc.frequency.exponentialRampToValueAtTime(Math.max(1, to), startTime + Math.max(0.004, decay * 0.9));
+                }
+                const gain = this.createGainEnvelope(startTime, peak, attack, decay);
+                osc.connect(gain);
+                osc.start(startTime);
+                osc.stop(startTime + (duration || attack + decay + 0.015));
+            }
+
+            createDualPing(startTime, primary, secondary = null, peak = 0.02, decay = 0.1) {
+                this.createTone(startTime, {
+                    type: 'sine',
+                    from: primary,
+                    to: primary * 0.985,
+                    peak,
+                    attack: 0.002,
+                    decay,
+                    duration: decay + 0.03
+                });
+                if (secondary) {
+                    this.createTone(startTime + 0.003, {
+                        type: 'sine',
+                        from: secondary,
+                        to: secondary * 0.99,
+                        peak: peak * 0.45,
+                        attack: 0.002,
+                        decay: decay * 1.1,
+                        duration: decay + 0.04
+                    });
+                }
+            }
+
+            createRelayThunk(startTime, bodyFreq = 150, peak = 0.08, decay = 0.06) {
+                this.createTone(startTime, {
+                    type: 'triangle',
+                    from: bodyFreq,
+                    to: Math.max(48, bodyFreq * 0.68),
+                    peak,
+                    attack: 0.001,
+                    decay,
+                    duration: decay + 0.02
+                });
+                this.createFilteredNoise(startTime + 0.002, 0.01, peak * 0.18, 'highpass', 2800, 1.2);
+            }
+
+            createRoomAir(startTime, duration = 0.12, peak = 0.006, frequency = 900) {
+                this.createFilteredNoise(startTime, duration, peak, 'bandpass', frequency, 0.9);
+            }
+
+            createExplosionBurst(startTime, {
+                blastPeak = 0.06,
+                lowPeak = 0.12,
+                debrisPeak = 0.02,
+                bodyFreq = 78,
+                bodyTailFreq = 34,
+                noiseFreq = 820,
+                length = 0.22
+            } = {}) {
+                this.createFilteredNoise(startTime, 0.03, blastPeak * 1.15, 'highpass', 1900, 0.65);
+                this.createFilteredNoise(startTime + 0.002, length * 0.8, blastPeak, 'bandpass', noiseFreq, 0.5);
+                this.createFilteredNoise(startTime + 0.006, length, blastPeak * 0.8, 'highpass', 2600, 0.85);
+                this.createFilteredNoise(startTime + 0.01, length * 1.05, blastPeak * 0.7, 'lowpass', 240, 0.72);
+                this.createFilteredNoise(startTime + 0.045, length * 1.35, debrisPeak, 'bandpass', 1450, 0.9);
+                this.createFilteredNoise(startTime + 0.065, length * 1.5, debrisPeak * 0.65, 'highpass', 3200, 0.75);
+
+                this.createTone(startTime + 0.01, {
+                    type: 'sine',
+                    from: bodyFreq,
+                    to: bodyTailFreq,
+                    peak: lowPeak * 0.72,
+                    attack: 0.001,
+                    decay: length * 0.95,
+                    duration: length + 0.08
+                });
+                this.createTone(startTime + 0.018, {
+                    type: 'triangle',
+                    from: bodyFreq * 1.35,
+                    to: bodyTailFreq * 1.15,
+                    peak: lowPeak * 0.16,
+                    attack: 0.001,
+                    decay: length * 0.6,
+                    duration: length * 0.68
+                });
+            }
+
+            createSonarChirp(startTime, from = 1800, to = 2400, peak = 0.016, decay = 0.12) {
+                this.createTone(startTime, {
+                    type: 'sine',
+                    from,
+                    to,
+                    peak,
+                    attack: 0.001,
+                    decay,
+                    duration: decay + 0.02
+                });
+                this.createTone(startTime + 0.002, {
+                    type: 'sine',
+                    from: from * 0.5,
+                    to: to * 0.5,
+                    peak: peak * 0.35,
+                    attack: 0.001,
+                    decay: decay * 1.1,
+                    duration: decay + 0.03
+                });
+            }
+
+            createGlassPing(startTime, frequency = 2200, peak = 0.02, decay = 0.22) {
+                this.createTone(startTime, {
+                    type: 'sine',
+                    from: frequency,
+                    to: frequency * 0.998,
+                    peak,
+                    attack: 0.001,
+                    decay,
+                    duration: decay + 0.05
+                });
+                this.createTone(startTime + 0.004, {
+                    type: 'sine',
+                    from: frequency * 1.5,
+                    to: frequency * 1.49,
+                    peak: peak * 0.22,
+                    attack: 0.001,
+                    decay: decay * 0.8,
+                    duration: decay * 0.8 + 0.04
+                });
+                this.createTone(startTime + 0.007, {
+                    type: 'sine',
+                    from: frequency * 0.5,
+                    to: frequency * 0.5,
+                    peak: peak * 0.14,
+                    attack: 0.001,
+                    decay: decay * 1.15,
+                    duration: decay + 0.06
+                });
+            }
+
+            async playHoverTick() {
+                if (!this.enabled) return;
+                const now = performance.now();
+                if (now - this.lastHoverAt < 70) return;
+                this.lastHoverAt = now;
+                if (this.playSample('hover')) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                this.createGlassPing(start, 1340, 0.011, 0.1);
+            }
+
+            async playRelayClick() {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                this.createRelayThunk(start, 104, 0.052, 0.045);
+                this.createTone(start + 0.003, {
+                    type: 'triangle',
+                    from: 980,
+                    to: 540,
+                    peak: 0.015,
+                    attack: 0.001,
+                    decay: 0.08,
+                    duration: 0.1
+                });
+                this.createTone(start + 0.015, {
+                    type: 'sine',
+                    from: 620,
+                    to: 420,
+                    peak: 0.008,
+                    attack: 0.001,
+                    decay: 0.09,
+                    duration: 0.11
+                });
+            }
+
+            playMissionButtonPress() {
+                if (this.playSample('missionClick')) return;
+                this.playRelayClick();
+            }
+
+            async playTypingPulse(kind = 'ai') {
+                if (!this.enabled) return;
+                const now = performance.now();
+                const throttle = kind === 'system' ? 28 : kind === 'operator' ? 48 : 34;
+                if (now - (this.lastPulseAt[kind] || 0) < throttle) return;
+                this.lastPulseAt[kind] = now;
+
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+                const start = ctx.currentTime;
+                if (kind === 'system') {
+                    this.createGlassPing(start, 1980, 0.008, 0.1);
+                } else if (kind === 'operator') {
+                    this.createRelayThunk(start, 104, 0.042, 0.04);
+                    this.createTone(start + 0.004, {
+                        type: 'sine',
+                        from: 860,
+                        to: 760,
+                        peak: 0.006,
+                        attack: 0.001,
+                        decay: 0.03,
+                        duration: 0.04
+                    });
+                } else {
+                    this.createGlassPing(start, 1820, 0.007, 0.09);
+                }
+            }
+
+            async startNixieRoll(duration = 3000) {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+                this.stopNixieRoll();
+                this.playNixieTick();
+                this.nixieInterval = window.setInterval(() => {
+                    this.playNixieTick();
+                }, 62);
+                window.setTimeout(() => this.stopNixieRoll(), duration + 80);
+            }
+
+            stopNixieRoll() {
+                if (this.nixieInterval) {
+                    clearInterval(this.nixieInterval);
+                    this.nixieInterval = null;
+                }
+            }
+
+            async playNixieTick() {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                const base = 1740 + Math.random() * 140;
+                this.createGlassPing(start, base, 0.007, 0.07);
+            }
+
+            async playStaticBurst() {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                this.createFilteredNoise(start, 0.065, 0.014, 'bandpass', 2600, 0.7);
+                this.createFilteredNoise(start + 0.006, 0.05, 0.01, 'highpass', 5200, 0.8);
+            }
+
+            async playChannelSwitch() {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                this.createRelayThunk(start, 78, 0.085, 0.055);
+                this.createTone(start, {
+                    type: 'triangle',
+                    from: 86,
+                    to: 34,
+                    peak: 0.07,
+                    attack: 0.001,
+                    decay: 0.12,
+                    duration: 0.14
+                });
+
+                this.createFilteredNoise(start + 0.002, 0.26, 0.04, 'bandpass', 1700, 0.5);
+                this.createFilteredNoise(start + 0.004, 0.24, 0.03, 'highpass', 4600, 0.75);
+                this.createFilteredNoise(start + 0.012, 0.2, 0.016, 'bandpass', 3100, 0.95);
+                this.createFilteredNoise(start + 0.016, 0.18, 0.016, 'lowpass', 780, 0.85);
+
+                this.createTone(start + 0.014, {
+                    type: 'sawtooth',
+                    from: 180,
+                    to: 1880,
+                    peak: 0.02,
+                    attack: 0.008,
+                    decay: 0.13,
+                    duration: 0.16
+                });
+                this.createTone(start + 0.03, {
+                    type: 'sine',
+                    from: 520,
+                    to: 2280,
+                    peak: 0.012,
+                    attack: 0.006,
+                    decay: 0.11,
+                    duration: 0.13
+                });
+                this.createTone(start + 0.038, {
+                    type: 'square',
+                    from: 920,
+                    to: 2680,
+                    peak: 0.008,
+                    attack: 0.004,
+                    decay: 0.12,
+                    duration: 0.15
+                });
+
+                this.createTone(start + 0.082, {
+                    type: 'sine',
+                    from: 1460,
+                    to: 1360,
+                    peak: 0.01,
+                    attack: 0.002,
+                    decay: 0.06,
+                    duration: 0.075
+                });
+                this.createTone(start + 0.11, {
+                    type: 'sine',
+                    from: 1180,
+                    to: 980,
+                    peak: 0.007,
+                    attack: 0.002,
+                    decay: 0.12,
+                    duration: 0.15
+                });
+
+                this.createFilteredNoise(start + 0.1, 0.16, 0.014, 'bandpass', 2500, 1.1);
+                this.createFilteredNoise(start + 0.13, 0.14, 0.009, 'highpass', 5600, 0.8);
+                this.createFilteredNoise(start + 0.17, 0.12, 0.007, 'bandpass', 1800, 0.9);
+            }
+
+            async playFdlHit(isHuge = false) {
+                if (!this.enabled) return;
+                if (this.playSample(isHuge ? 'fdlLarge' : 'fdlSmall')) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                if (isHuge) {
+                    this.createFilteredNoise(start, 0.04, 0.01, 'bandpass', 1200, 0.8);
+                    this.createFilteredNoise(start + 0.012, 0.035, 0.012, 'highpass', 2400, 0.8);
+                    this.createExplosionBurst(start + 0.038, {
+                        blastPeak: 0.11,
+                        lowPeak: 0.28,
+                        debrisPeak: 0.04,
+                        bodyFreq: 82,
+                        bodyTailFreq: 24,
+                        noiseFreq: 680,
+                        length: 0.46
+                    });
+                    this.createFilteredNoise(start + 0.09, 0.5, 0.02, 'bandpass', 520, 0.82);
+                    this.createFilteredNoise(start + 0.12, 0.42, 0.012, 'lowpass', 170, 0.75);
+                    this.createRoomAir(start + 0.04, 0.5, 0.015, 340);
+
+                    this.createTone(start + 0.18, {
+                        type: 'square',
+                        from: 940,
+                        to: 620,
+                        peak: 0.024,
+                        attack: 0.012,
+                        decay: 0.32,
+                        duration: 0.36
+                    });
+                    this.createTone(start + 0.28, {
+                        type: 'square',
+                        from: 620,
+                        to: 940,
+                        peak: 0.024,
+                        attack: 0.012,
+                        decay: 0.32,
+                        duration: 0.36
+                    });
+                    this.createTone(start + 0.38, {
+                        type: 'square',
+                        from: 940,
+                        to: 620,
+                        peak: 0.022,
+                        attack: 0.012,
+                        decay: 0.32,
+                        duration: 0.36
+                    });
+                    this.createTone(start + 0.48, {
+                        type: 'square',
+                        from: 620,
+                        to: 940,
+                        peak: 0.022,
+                        attack: 0.012,
+                        decay: 0.32,
+                        duration: 0.36
+                    });
+                    this.createTone(start + 0.58, {
+                        type: 'square',
+                        from: 940,
+                        to: 620,
+                        peak: 0.018,
+                        attack: 0.012,
+                        decay: 0.3,
+                        duration: 0.34
+                    });
+                    this.createTone(start + 0.68, {
+                        type: 'square',
+                        from: 620,
+                        to: 940,
+                        peak: 0.018,
+                        attack: 0.012,
+                        decay: 0.3,
+                        duration: 0.34
+                    });
+                } else {
+                    this.createFilteredNoise(start, 0.028, 0.008, 'highpass', 1800, 0.8);
+                    this.createExplosionBurst(start + 0.026, {
+                        blastPeak: 0.06,
+                        lowPeak: 0.13,
+                        debrisPeak: 0.022,
+                        bodyFreq: 66,
+                        bodyTailFreq: 30,
+                        noiseFreq: 840,
+                        length: 0.24
+                    });
+                    this.createFilteredNoise(start + 0.06, 0.24, 0.01, 'bandpass', 560, 0.8);
+                    this.createRoomAir(start + 0.026, 0.26, 0.009, 380);
+                }
+            }
+
+            async playExtraction() {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                this.createTone(start, {
+                    type: 'sine',
+                    from: 220,
+                    to: 920,
+                    peak: 0.014,
+                    attack: 0.035,
+                    decay: 0.2,
+                    duration: 0.25
+                });
+                this.createGlassPing(start + 0.11, 2060, 0.014, 0.18);
+                this.createGlassPing(start + 0.18, 2420, 0.009, 0.14);
+                this.createRoomAir(start, 0.24, 0.004, 980);
+            }
+
+            async playResultLock(isSuccess = true) {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                if (isSuccess) {
+                    const tones = [880, 1174.66, 1567.98];
+                    tones.forEach((freq, idx) => {
+                        this.createGlassPing(start + idx * 0.09, freq, idx === 2 ? 0.015 : 0.012, 0.16);
+                    });
+                } else {
+                    this.createGlassPing(start, 680, 0.006, 0.08);
+                    this.createTone(start + 0.08, {
+                        type: 'sine',
+                        from: 320,
+                        to: 260,
+                        peak: 0.006,
+                        attack: 0.002,
+                        decay: 0.06,
+                        duration: 0.08
+                    });
+                }
+            }
+
+            async playGameOver() {
+                if (!this.enabled) return;
+                const ctx = await this.ensureContext();
+                if (!ctx) return;
+
+                const start = ctx.currentTime;
+                this.createTone(start, {
+                    type: 'triangle',
+                    from: 120,
+                    to: 38,
+                    peak: 0.13,
+                    attack: 0.001,
+                    decay: 0.24,
+                    duration: 0.28
+                });
+                this.createRoomAir(start, 0.22, 0.005, 520);
+                this.createGlassPing(start + 0.22, 622.25, 0.009, 0.16);
+                this.createGlassPing(start + 0.45, 554.37, 0.007, 0.24);
+            }
+        }
+
+        const audioEngine = new ChronosAudioEngine();
+        const titleBgm = new Audio('assets/audio/bgm/Title_BGM_new.mp3');
+        titleBgm.preload = 'auto';
+        titleBgm.loop = true;
+        const missionBgm = new Audio('assets/audio/bgm/Mission_BGM.mp3');
+        missionBgm.preload = 'auto';
+        missionBgm.loop = true;
+        const gameBgm = new Audio('assets/audio/bgm/Game_BGM.mp3');
+        gameBgm.preload = 'auto';
+        gameBgm.loop = true;
+        let titleBgmUnlocked = false;
+
+        function updateBgmVolume() {
+            titleBgm.volume = Math.max(0, Math.min(1, ((Number(settings.bgmVolume) || 0) / 100) * 0.4));
+            missionBgm.volume = Math.max(0, Math.min(1, ((Number(settings.bgmVolume) || 0) / 100) * 0.34));
+            gameBgm.volume = Math.max(0, Math.min(1, ((Number(settings.bgmVolume) || 0) / 100) * 0.32));
+        }
+
+        async function syncBgmPlayback() {
+            const audioEnabled = titleBgmUnlocked && settings.audioEnabled !== false;
+            const shouldPlayTitle = audioEnabled && activeScreenId === 'title-screen';
+            const shouldPlayMission = audioEnabled && (activeScreenId === 'intro-screen' || activeScreenId === 'timeline-screen');
+            const shouldPlayGame = audioEnabled && activeScreenId === 'screen-container';
+            updateBgmVolume();
+
+            if (!shouldPlayTitle) {
+                titleBgm.pause();
+                titleBgm.currentTime = 0;
+            }
+
+            if (!shouldPlayMission) {
+                missionBgm.pause();
+                missionBgm.currentTime = 0;
+            }
+
+            if (!shouldPlayGame) {
+                gameBgm.pause();
+                gameBgm.currentTime = 0;
+            }
+
+            if (shouldPlayTitle && titleBgm.paused) {
+                try {
+                    await titleBgm.play();
+                } catch {
+                    // Ignore autoplay failures until the next user gesture.
+                }
+            }
+
+            if (shouldPlayMission && missionBgm.paused) {
+                try {
+                    await missionBgm.play();
+                } catch {
+                    // Ignore autoplay failures until the next user gesture.
+                }
+            }
+
+            if (shouldPlayGame && gameBgm.paused) {
+                try {
+                    await gameBgm.play();
+                } catch {
+                    // Ignore autoplay failures until the next user gesture.
+                }
+            }
         }
 
         function getThemeIndex(themeName) {
@@ -1635,7 +2375,7 @@
                 document.documentElement.setAttribute('data-theme', themeName);
             }
             settings.theme = themeName;
-            updateFDLGauge();
+            updateFDLGauge(false);
             if (!document.getElementById('timeline-screen').classList.contains('hidden')) {
                 updateTimelineDivergence();
                 renderTimeline();
@@ -1936,44 +2676,147 @@
         };
 
         const agentRoster = [
-            { name: "KESSLER", trait: "METHODICAL", specialty: "Forensic Analyst", 
-              skills: [{name: "Hacking", description: "Bypass electronic locks and encrypted data systems."}, {name: "Forensics", description: "Analyze physical evidence for hidden clues and temporal traces."}], 
+            { name: "KESSLER", trait: "METHODICAL", specialty: "Forensic Analyst",
+              skills: [{name: "Hacking", description: "Bypass electronic locks and encrypted data systems."}, {name: "Forensics", description: "Analyze physical evidence for hidden clues and temporal traces."}],
               inventory: [{name: "Chronal Scanner", description: "Detects temporal anomalies and evaluates Divergence shifts."}, {name: "Silenced Pistol", description: "Standard issue firearm for quiet kinetic elimination."}],
-              lore: {
-                  en: { dob: "1994-03-12", age: "44", h: "185cm", w: "82kg", bg: "Former BND forensics specialist, extracted moments before a timeline collapse in Munich. Kessler lost his entire family in that incident, driving him to an obsession with chronal perfection. He is meticulous to a fault, treating every insertion as a surgical procedure to prevent another tragedy. Known for leaving absolutely zero chronal footprints.", phys: "Optimal. Resting heart rate remains an unnatural 55 BPM even under heavy fire. Minimal fatigue.", ment: "Cold, calculating, and slightly detached. Suffers from chronic nightmares of alternate lives." },
-                  ja: { dob: "1994-03-12", age: "44", h: "185cm", w: "82kg", bg: "元BND法医学スペシャリスト。ミュンヘンのタイムライン崩壊の直前に救出された。その事件で家族全員を失っており、クロノ・パーフェクションへの執着の原動力となっている。二度と悲劇を繰り返さないため、あらゆる潜入を外科手術のように細心の注意を払って行う。時間的な痕跡を全く残さないことで知られる。", phys: "最適。激しい銃撃戦の下でも安静時心拍数は異常な55 BPMを保つ。疲労は最小限。", ment: "冷酷で計算高く、現実からわずかに乖離している。別の人生の悪夢に慢性的に悩まされている。" },
-                  zh: { dob: "1994-03-12", age: "44", h: "185cm", w: "82kg", bg: "前BND法医专家，在慕尼黑时间线崩溃前夕被救出。他在那次事件中失去了所有的家人，这驱使他对时间线的完美产生了一种近乎病态的执着。他一丝不苟，将每一次潜入都视为外科手术，以防止悲剧重演。以不留任何时间痕迹而闻名。", phys: "最佳状态。即使在猛烈交火中，静息心率也保持在反常的 55 BPM。疲劳感极低。", ment: "冷酷，精于计算，与现实略有脱节。长期遭受关于交替人生的噩梦折磨。" }
-              }
+              lore: {}
             },
-            { name: "VANCE", trait: "BRUTE-FORCE", specialty: "Heavy Munitions", 
-              skills: [{name: "CQC", description: "Advanced close-quarters combat proficiency."}, {name: "Explosives", description: "Expertise in crafting and disarming explosive devices."}], 
+            { name: "VANCE", trait: "BRUTE-FORCE", specialty: "Heavy Munitions",
+              skills: [{name: "CQC", description: "Advanced close-quarters combat proficiency."}, {name: "Explosives", description: "Expertise in crafting and disarming explosive devices."}],
               inventory: [{name: "Breaching Charge", description: "High-yield explosive for destroying reinforced barriers."}, {name: "Assault Rifle", description: "High-capacity kinetic weapon for heavy engagements."}],
-              lore: {
-                  en: { dob: "1987-11-04", age: "51", h: "192cm", w: "105kg", bg: "Ex-JSOC heavy weapons specialist. Vance survived the initial '62 exchange trapped in a collapsed subterranean bunker for three months, an experience that forged his grim fatalism. He doesn't believe in the 'perfect timeline'—only the mission. He is deployed exclusively when absolute, brute-force timeline realignment is necessary.", phys: "Heavily scarred with widespread radiation burn tissue. Chronically elevated adrenaline levels.", ment: "Aggressive and deeply cynical. Prone to choosing explosive action over tactical analysis." },
-                  ja: { dob: "1987-11-04", age: "51", h: "192cm", w: "105kg", bg: "元JSOCの重火器スペシャリスト。ヴァンスは62年の最初の核攻撃の際、崩落した地下バンカーに3ヶ月間閉じ込められ生き延びた。この経験が彼の冷酷な運命論を形成している。「完璧なタイムライン」など信じておらず、任務のみを信条とする。絶対的で強引なタイムラインの再調整が必要な場合にのみ投入される。", phys: "全身に広範囲な放射線火傷の傷跡。慢性的にアドレナリン値が上昇している。", ment: "攻撃的で極めてシニカル。戦術的な分析よりも爆発的な行動を選ぶ傾向がある。" },
-                  zh: { dob: "1987-11-04", age: "51", h: "192cm", w: "105kg", bg: "前JSOC重武器专家。万斯在62年最初的核交火中被困在一个坍塌的地下掩体中三个月并幸存下来，这段经历铸就了他冷酷的宿命论。他不相信所谓的“完美时间线”——只相信任务。他只在需要绝对、暴力的时间线重组时才会被部署。", phys: "伤痕累累，有大面积的辐射烧伤疤痕。肾上腺素水平长期偏高。", ment: "极具攻击性且愤世嫉俗。倾向于选择爆炸性的行动而非战术分析。" }
-              }
+              lore: {}
             },
-            { name: "CHEN", trait: "STEALTH", specialty: "Covert Infiltrator", 
-              skills: [{name: "Infiltration", description: "Ability to bypass security perimeters undetected."}, {name: "Acrobatics", description: "High mobility for reaching inaccessible areas."}], 
+            { name: "CHEN", trait: "STEALTH", specialty: "Covert Infiltrator",
+              skills: [{name: "Infiltration", description: "Ability to bypass security perimeters undetected."}, {name: "Acrobatics", description: "High mobility for reaching inaccessible areas."}],
               inventory: [{name: "Lockpicks", description: "Mechanical tools for bypassing physical locks."}, {name: "Smoke Grenades", description: "Creates visual cover for evasion or ambush."}],
-              lore: {
-                  en: { dob: "1999-07-22", age: "39", h: "170cm", w: "65kg", bg: "A shadow agent originating from the Ministry of State Security. Chen was born in the ruins of a post-war Shanghai that no longer exists, having erased her own timeline to save the Directorate. She moves like a phantom, specializing in silent asset extraction, holding onto fading memories of a home she sacrificed.", phys: "Exceptional agility and neuro-muscular reflexes. Unusually low lactic acid accumulation.", ment: "Hyper-focused and solitary. Exhibits minor symptoms of temporal paranoia and survivor's guilt." },
-                  ja: { dob: "1999-07-22", age: "39", h: "170cm", w: "65kg", bg: "国家安全部出身のシャドウエージェント。チェンは、現在はもう存在しない戦後の上海の廃墟で生まれ、局を救うために自らのタイムラインを消去した。彼女はファントムのように動き、静かなる資産の救出に特化しており、自ら犠牲にした故郷の色褪せた記憶を抱き続けている。", phys: "卓越した敏捷性と神経筋肉反射。乳酸の蓄積が異常に少ない。", ment: "極度の集中力と孤独を好む傾向。時間的なパラノイアとサバイバーズ・ギルトの軽度な症状を示す。" },
-                  zh: { dob: "1999-07-22", age: "39", h: "170cm", w: "65kg", bg: "出身于国家安全部的影子特工。陈出生在战后上海的废墟中，为了拯救管理局，她抹去了自己原本的时间线（那个上海现在已不复存在）。她像幽灵一样行动，专门负责无声的资产撤离，紧紧抓着她所牺牲的故乡那逐渐褪色的记忆。", phys: "卓越的敏捷性和神经肌肉反射。乳酸累积异常低。", ment: "极度专注且性格孤僻。表现出轻微的时间偏执症状和幸存者内疚感。" }
-              }
+              lore: {}
             },
-            { name: "NOVA", trait: "SOCIAL", specialty: "CIA Operative", 
-              skills: [{name: "Persuasion", description: "Manipulate targets through conversation and psychological tactics."}, {name: "Disguise", description: "Assume false identities to blend into hostile environments."}], 
+            { name: "NOVA", trait: "SOCIAL", specialty: "CIA Operative",
+              skills: [{name: "Persuasion", description: "Manipulate targets through conversation and psychological tactics."}, {name: "Disguise", description: "Assume false identities to blend into hostile environments."}],
               inventory: [{name: "Forged Credentials", description: "Fake identification documents to bypass checkpoints."}, {name: "Truth Serum", description: "Chemical agent to force targets to reveal critical intel."}],
-              lore: {
-                  en: { dob: "1996-09-08", age: "42", h: "175cm", w: "68kg", bg: "A CIA black ops psychological warfare specialist. Nova thrives in the minds of others, spending so much time in deep cover across different decades that her own original identity is classified even to her. She is charismatic, dangerous, and uniquely capable of bending the Nexus gently through subtle manipulation rather than force.", phys: "Standard vitals, augmented by heavy use of classified synthetic metabolism boosters.", ment: "Highly adaptive and charming. Displays the necessary sociopathic tendencies required for deep-cover betrayals." },
-                  ja: { dob: "1996-09-08", age: "42", h: "175cm", w: "68kg", bg: "CIAブラックオプス心理戦スペシャリスト。ノヴァは他者の心に入り込み、様々な年代でディープカバーでの潜入に多くの時間を費やしてきたため、彼女自身の本来のアイデンティティは彼女自身にも機密扱いとなっている。彼女はカリスマ性があり危険で、力ではなく巧妙な心理操作によってネクサスを緩やかに曲げる特異な能力を持っている。", phys: "標準的なバイタルだが、機密指定の合成代謝促進剤の大量使用により強化されている。", ment: "高い適応能力と魅力。ディープカバーでの裏切りに必要な社会病質的傾向を示す。" },
-                  zh: { dob: "1996-09-08", age: "42", h: "175cm", w: "68kg", bg: "CIA黑行动心理战专家。诺娃在别人的头脑中游刃有余，她在不同的年代花费了大量时间进行深度潜伏，以至于她自己原本的身份对她自己来说也是机密。她充满魅力，极具危险性，并且具有独特的能力，可以通过巧妙的心理操纵而不是武力来温和地扭曲核心节点。", phys: "标准生命体征，但因大量使用机密的合成新陈代谢促进剂而得到强化。", ment: "极具适应性和魅力。表现出深度潜伏背叛所必需的反社会倾向。" }
-              }
+              lore: {}
             }
         ];
 
+        function createEmptyAgentLoreEntry() {
+            return {
+                dob: "---",
+                age: "---",
+                h: "---",
+                w: "---",
+                bg: "---",
+                phys: "---",
+                ment: "---"
+            };
+        }
+
+        function parseCsvRows(csvText) {
+            const rows = [];
+            let current = '';
+            let row = [];
+            let inQuotes = false;
+
+            for (let i = 0; i < csvText.length; i++) {
+                const ch = csvText[i];
+                const next = csvText[i + 1];
+
+                if (ch === '"') {
+                    if (inQuotes && next === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (ch === ',' && !inQuotes) {
+                    row.push(current);
+                    current = '';
+                } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+                    if (ch === '\r' && next === '\n') i++;
+                    row.push(current);
+                    if (row.some(cell => cell !== '')) rows.push(row);
+                    row = [];
+                    current = '';
+                } else {
+                    current += ch;
+                }
+            }
+
+            if (current.length > 0 || row.length > 0) {
+                row.push(current);
+                if (row.some(cell => cell !== '')) rows.push(row);
+            }
+
+            return rows;
+        }
+
+        function mapAgentProfileRows(csvText) {
+            const rows = parseCsvRows(csvText);
+            if (!rows.length) return {};
+
+            const [header, ...dataRows] = rows;
+            const indexByName = header.reduce((acc, key, index) => {
+                acc[key] = index;
+                return acc;
+            }, {});
+
+            const mapped = {};
+
+            dataRows.forEach(columns => {
+                const agentId = (columns[indexByName.agent_id] || '').trim();
+                const lang = (columns[indexByName.lang] || '').trim();
+                if (!agentId || !lang) return;
+
+                if (!mapped[agentId]) mapped[agentId] = {};
+
+                mapped[agentId][lang] = {
+                    dob: (columns[indexByName.dob] || '---').trim() || '---',
+                    age: (columns[indexByName.age] || '---').trim() || '---',
+                    h: (columns[indexByName.height] || '---').trim() || '---',
+                    w: (columns[indexByName.weight] || '---').trim() || '---',
+                    bg: (columns[indexByName.bg] || '---').trim() || '---',
+                    phys: (columns[indexByName.phys] || '---').trim() || '---',
+                    ment: (columns[indexByName.ment] || '---').trim() || '---'
+                };
+            });
+
+            return mapped;
+        }
+
+        function buildAgentLore(profileMap, agentId) {
+            const profile = profileMap?.[agentId] || {};
+            return {
+                en: { ...createEmptyAgentLoreEntry(), ...(profile.en || {}) },
+                ja: { ...createEmptyAgentLoreEntry(), ...(profile.ja || profile.en || {}) },
+                zh: { ...createEmptyAgentLoreEntry(), ...(profile.zh || profile.en || {}) }
+            };
+        }
+
+        let agentProfilesById = {};
+
+        function hydrateAgentRosterProfiles() {
+            agentRoster.forEach(agent => {
+                agent.lore = buildAgentLore(agentProfilesById, agent.name);
+            });
+        }
+
+        async function loadAgentProfiles() {
+            try {
+                const response = await fetch('assets/data/agent_profiles.csv', { cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error(`Failed to load agent_profiles.csv: ${response.status}`);
+                }
+
+                const csvText = await response.text();
+                agentProfilesById = mapAgentProfileRows(csvText);
+            } catch (error) {
+                console.error('Failed to load agent profiles from CSV.', error);
+                agentProfilesById = {};
+            }
+
+            hydrateAgentRosterProfiles();
+        }
+
+        const agentProfilesReady = loadAgentProfiles();
         const i18n = {
             en: {
                 options: "OPTIONS",
@@ -2512,6 +3355,13 @@
         }
 
         function getGeminiRateLimitState(now = Date.now()) {
+            if (!Number.isFinite(geminiRateLimitRpm) || geminiRateLimitRpm <= 0) {
+                return {
+                    remaining: Infinity,
+                    waitMs: 0,
+                    used: geminiRequestTimestamps.length
+                };
+            }
             pruneGeminiRequestTimestamps(now);
             const remaining = Math.max(0, geminiRateLimitRpm - geminiRequestTimestamps.length);
             const oldest = geminiRequestTimestamps[0];
@@ -2524,6 +3374,13 @@
         }
 
         async function waitForGeminiRateLimit(contextLabel = 'generate') {
+            if (!Number.isFinite(geminiRateLimitRpm) || geminiRateLimitRpm <= 0) {
+                return {
+                    remaining: Infinity,
+                    waitMs: 0,
+                    used: geminiRequestTimestamps.length
+                };
+            }
             while (true) {
                 const state = getGeminiRateLimitState();
                 if (state.remaining > 0) {
@@ -2548,6 +3405,13 @@
             if (el) el.innerText = labels[String(settings.textSpeed)] || labels["2"];
         }
 
+        function updateAudioVolumeLabels() {
+            const seEl = document.getElementById('settings-se-volume-value');
+            const bgmEl = document.getElementById('settings-bgm-volume-value');
+            if (seEl) seEl.innerText = `${Math.max(0, Math.min(100, Number(settings.seVolume) || 0))}%`;
+            if (bgmEl) bgmEl.innerText = `${Math.max(0, Math.min(100, Number(settings.bgmVolume) || 0))}%`;
+        }
+
         function updateSettingsStatus(customText = null, customColor = null) {
             const el = document.getElementById('settings-api-status');
             if (!el) return;
@@ -2562,13 +3426,20 @@
             const speedInput = document.getElementById('settings-text-speed');
             const modelSelect = document.getElementById('settings-model-select');
             const apiKeyInput = document.getElementById('settings-api-key');
+            const audioEnabledInput = document.getElementById('settings-audio-enabled');
+            const seVolumeInput = document.getElementById('settings-se-volume');
+            const bgmVolumeInput = document.getElementById('settings-bgm-volume');
             if (themeSelect) themeSelect.value = settings.theme;
             if (languageSelect) languageSelect.value = settings.language;
             if (speedInput) speedInput.value = settings.textSpeed;
             populateModelSelect(settings.model);
             if (modelSelect) modelSelect.value = availableGeminiModels.includes(settings.model) ? settings.model : getConfiguredModel();
             if (apiKeyInput) apiKeyInput.value = settings.apiKey;
+            if (audioEnabledInput) audioEnabledInput.checked = settings.audioEnabled !== false;
+            if (seVolumeInput) seVolumeInput.value = Math.max(0, Math.min(100, Number(settings.seVolume) || 0));
+            if (bgmVolumeInput) bgmVolumeInput.value = Math.max(0, Math.min(100, Number(settings.bgmVolume) || 0));
             updateSpeedLabel();
+            updateAudioVolumeLabels();
             updateSettingsStatus();
             updateAiConnectionIndicator();
         }
@@ -2659,6 +3530,7 @@
                     staticEl.classList.remove('static-active');
                     void staticEl.offsetWidth; // Reflow to restart animation
                     staticEl.classList.add('static-active');
+                    audioEngine.playChannelSwitch();
                     
                     // Add a subtle physical shake to the whole body (Intensity reduced further)
                     let shakeIntensity = 0.8;
@@ -2668,6 +3540,8 @@
                     void document.body.offsetWidth;
                     document.body.classList.add('shake-screen');
                 }
+
+                syncBgmPlayback();
 
                 if (hideEl) {
                     hideEl.classList.add('channel-off');
@@ -2789,23 +3663,60 @@
         let unlockedLevels = ['nexus-1'];
         let completedLevels = [];
         let currentLevelId = null;
+        const campaignStateStorageKey = 'chronos_campaign_state';
+
+        function clampCampaignDivergence(value) {
+            if (!Number.isFinite(value)) return 0.0;
+            return Math.min(9.999999, Math.max(-9.999999, value));
+        }
+
+        function clampCampaignFdlHealth(value) {
+            if (!Number.isFinite(value)) return 100.0;
+            return Math.min(100.0, Math.max(0.0, value));
+        }
 
         function saveProgress() {
             localStorage.setItem('chronos_unlocked', JSON.stringify(unlockedLevels));
             localStorage.setItem('chronos_completed', JSON.stringify(completedLevels));
+            localStorage.setItem(
+                campaignStateStorageKey,
+                JSON.stringify({
+                    divergence: clampCampaignDivergence(state.divergence),
+                    fdl_health: clampCampaignFdlHealth(state.fdl_health)
+                })
+            );
         }
 
         function loadProgress() {
             const savedUnlocked = localStorage.getItem('chronos_unlocked');
             const savedCompleted = localStorage.getItem('chronos_completed');
+            const savedCampaignState = localStorage.getItem(campaignStateStorageKey);
             if (savedUnlocked) unlockedLevels = JSON.parse(savedUnlocked);
             if (savedCompleted) completedLevels = JSON.parse(savedCompleted);
+            if (savedCampaignState) {
+                try {
+                    const parsedCampaignState = JSON.parse(savedCampaignState);
+                    state.divergence = clampCampaignDivergence(Number(parsedCampaignState?.divergence));
+                    state.fdl_health = clampCampaignFdlHealth(Number(parsedCampaignState?.fdl_health));
+                } catch (error) {
+                    console.warn('Failed to load campaign state from storage.', error);
+                    state.divergence = 0.0;
+                    state.fdl_health = 100.0;
+                }
+            } else {
+                state.divergence = 0.0;
+                state.fdl_health = 100.0;
+            }
         }
 
         function updateResetButtonVisibility() {
             const btn = document.getElementById('btn-reset-data');
             if (!btn) return;
-            if (localStorage.getItem('chronos_unlocked') || localStorage.getItem('chronos_completed')) {
+            if (
+                localStorage.getItem('chronos_unlocked') ||
+                localStorage.getItem('chronos_completed') ||
+                localStorage.getItem(campaignStateStorageKey)
+            ) {
                 btn.classList.remove('hidden');
             } else {
                 btn.classList.add('hidden');
@@ -2815,9 +3726,12 @@
         document.getElementById('btn-reset-data')?.addEventListener('click', () => {
             localStorage.removeItem('chronos_unlocked');
             localStorage.removeItem('chronos_completed');
+            localStorage.removeItem(campaignStateStorageKey);
             localStorage.removeItem('chronos_tutorial_done');
             unlockedLevels = ['nexus-1'];
             completedLevels = [];
+            state.divergence = 0.0;
+            state.fdl_health = 100.0;
             
             const btn = document.getElementById('btn-reset-data');
             const originalText = i18n[currentLang].resetData;
@@ -2912,7 +3826,7 @@
                 // The 'target' virtual node becomes "completed" only if the final mission (Nexus-7) is done.
                 const isCompleted = md.isVirtual ? (md.id === 'origin' || completedLevels.includes('nexus-7')) : completedLevels.includes(md.id);
 
-                const btn = document.createElement('div');
+                const btn = document.createElement('button');
                 
                 // Color coding logic implemented as CSS classes
                 let nodeClass = 'nexus-node';
@@ -2924,9 +3838,11 @@
                 if (isCompleted) nodeClass += ' completed';
                 
                 btn.className = nodeClass;
+                btn.type = 'button';
                 btn.style.left = `${xPct}%`;
                 btn.style.top = `${yPct}%`;
                 btn.id = `node-${md.id}`;
+                btn.dataset.missionId = md.id;
                 
                 let headerText = md.isVirtual ? t.sysNode : `NEXUS ${md.year}`;
                 let bodyHtml = '';
@@ -2949,14 +3865,18 @@
                         bodyHtml += `<div class="node-hover-div text-2xl lg:text-3xl text-nixie font-bold leading-none" style="text-shadow: 0 0 15px var(--tm-shadow), 0 0 30px var(--tm-shadow);">${md.targetDiv.toFixed(6)}</div>`;
                     }
                     
-                    if (!md.isVirtual && isUnlocked) {
-                        btn.addEventListener('click', () => {
-                            showBriefing(md.id);
-                        });
-                    }
                 }
                 
                 btn.innerHTML = `<div class="node-header">${headerText}</div><div class="node-body">${bodyHtml}</div>`;
+                if (!md.isVirtual && isUnlocked) {
+                    btn.addEventListener('pointerup', () => {
+                        audioEngine.playMissionButtonPress();
+                        openMissionBriefing(md.id, `node-pointerup:${md.id}`);
+                    });
+                    btn.addEventListener('click', () => {
+                        openMissionBriefing(md.id, `node-click:${md.id}`);
+                    });
+                }
                 tree.appendChild(btn);
                 nodeElems[md.id] = btn;
             });
@@ -3057,22 +3977,44 @@
             renderTimeline();
         });
 
+        function openMissionBriefing(levelId, source = 'unknown') {
+            console.debug(`[CHRONOS] mission activation requested: ${levelId} via ${source}`);
+            return showBriefing(levelId).catch(error => {
+                console.error(`Failed to open briefing for ${levelId}.`, error);
+            });
+        }
+
+        document.getElementById('timeline-tree')?.addEventListener('click', (e) => {
+            const target = e.target instanceof Element ? e.target : null;
+            const missionNode = target?.closest('[data-mission-id]');
+            if (!missionNode) return;
+            if (!missionNode.classList.contains('nexus-node') || missionNode.classList.contains('type-virtual') || !missionNode.classList.contains('unlocked')) return;
+
+            const missionId = missionNode.dataset.missionId;
+            if (!missionId || !missionsData[missionId]) return;
+
+            openMissionBriefing(missionId, 'timeline-tree-click');
+        });
+
         /** --- BRIEFING SCREEN LOGIC --- */
         async function showBriefing(levelId) {
-            if (!getConfiguredApiKey()) {
-                settingsStatusKey = 'settingsStatusSaveKeyFirst';
-                openSettingsModal();
+            console.debug(`[CHRONOS] showBriefing start: ${levelId}`);
+            await agentProfilesReady;
+            const mission = missionsData[levelId];
+            if (!mission) {
+                console.warn(`[CHRONOS] showBriefing aborted: mission not found for ${levelId}`);
                 return;
             }
+
             currentLevelId = levelId;
             await switchScreen('briefing-screen');
+            console.debug(`[CHRONOS] switched to briefing-screen for ${levelId}`);
             
             draftNewAgent();
             
             const t = i18n[currentLang];
-            const mission = missionsData[levelId];
             const mLocale = mission[currentLang];
-            const agentLore = state.agent.lore[currentLang];
+            const agentLore = state.agent.lore?.[currentLang] || state.agent.lore?.en || createEmptyAgentLoreEntry();
             
             document.getElementById('brf-mission-title').innerText = mLocale.title;
             document.getElementById('brf-mission-diff').innerText = mLocale.diff;
@@ -3132,6 +4074,7 @@
             isGameOver: false,
             isProcessing: false,
             tutorialActive: false,
+            extractionCuePlayed: false,
             
             agent: {
                 name: "---", trait: "---", specialty: "---",
@@ -3173,6 +4116,8 @@
             optionsMenu: document.getElementById('options-menu'),
             dynamicOptions: document.getElementById('dynamic-options'),
             optFreeInput: document.getElementById('opt-free-input'),
+            btnReturnMissionSelect: document.getElementById('btn-return-mission-select'),
+            btnReturnTitle: document.getElementById('btn-return-title'),
             terminalOutput: document.getElementById('terminal-output'),
             loadingIndicator: document.getElementById('loading-indicator'),
             divergenceValue: document.getElementById('divergence-value'),
@@ -3274,13 +4219,7 @@
 
         document.getElementById('btn-sys-return')?.addEventListener('click', async () => {
             document.getElementById('system-menu-overlay').classList.add('hidden');
-            // Abort current loop logic to prevent ghosts overlapping with title
-            state.isGameOver = true; 
-            if (els.gameOverOverlay) els.gameOverOverlay.style.display = 'none';
-            if (els.screenFlash) els.screenFlash.style.opacity = '0';
-            
-            await saveProgress();
-            await switchScreen('title-screen');
+            await exitActiveMission('title-screen');
         });
 
         /** --- TUTORIAL LOGIC --- */
@@ -3344,6 +4283,33 @@
 
 
         /** --- INITIALIZATION --- */
+        async function exitActiveMission(destination = 'title-screen') {
+            state.isGameOver = true;
+            state.isProcessing = false;
+            if (els.optionsMenu) els.optionsMenu.classList.add('hidden');
+            if (els.gameOverOverlay) els.gameOverOverlay.style.display = 'none';
+            if (els.screenFlash) els.screenFlash.style.opacity = '0';
+            if (els.loadingIndicator) els.loadingIndicator.classList.add('hidden');
+            if (els.cmdInput) {
+                els.cmdInput.disabled = false;
+                els.cmdInput.classList.add('hidden');
+                els.cmdInput.value = '';
+            }
+            if (els.inputTrigger) {
+                els.inputTrigger.classList.remove('hidden');
+                els.inputTrigger.innerText = i18n[currentLang].awaitingInput;
+            }
+
+            await saveProgress();
+            updateResetButtonVisibility();
+
+            if (destination === 'timeline-screen') {
+                await showTimeline();
+            } else {
+                await switchScreen('title-screen');
+            }
+        }
+
         async function initGame(levelId) {
             if (!getConfiguredApiKey()) {
                 openSettingsModal();
@@ -3357,14 +4323,10 @@
             const mLocale = mission[currentLang];
 
             state.runCount++;
-            state.fdl_health = 100.0;
             state.isGameOver = false;
             state.chatHistory = [];
-            
-            // Note: Divergence technically stays across the timeline in a full game, 
-            // but for per-mission gameplay testing, it resets to 0.
-            // If side quest, we use targetDiv or default to 1.0
-            state.divergence = 0.000000;
+            state.extractionCuePlayed = false;
+
             state.targetDivergence = mission.targetDiv !== undefined ? mission.targetDiv : 1.000000;
             state.objective = mLocale.obj;
             state.nodes = [`DROP ZONE: ${mission.year} ${mission.loc}`];
@@ -3383,9 +4345,12 @@
             }
             state.isProcessing = true;
             
-            currentDisplayedDiv = 0.000000;
+            currentDisplayedDiv = state.divergence;
 
-            if (state.agent.name === "---") draftNewAgent();
+            if (state.agent.name === "---") {
+                await agentProfilesReady;
+                draftNewAgent();
+            }
             updateUI();
             
             if (!animationFrameId) gameLoop();
@@ -3470,6 +4435,7 @@
             let startTime = null;
             el.classList.add('nixie-rolling');
             if (diffEl) diffEl.classList.add('nixie-rolling');
+            audioEngine.startNixieRoll(duration);
 
             function step(timestamp) {
                 if (!startTime) startTime = timestamp;
@@ -3508,6 +4474,7 @@
                 } else {
                     el.classList.remove('nixie-rolling');
                     if (diffEl) diffEl.classList.remove('nixie-rolling');
+                    audioEngine.stopNixieRoll();
                     el.innerHTML = formatDivHTML(end.toFixed(6));
                     if (!isSideQuest) {
                         const finalDiff = end - targetDiv;
@@ -3709,14 +4676,22 @@
                     let speed = type.includes("system") || type.includes("error") ? speedPreset.system : speedPreset.ai;
                     let textStr = "";
                     let isTag = false;
+                    let audibleChars = 0;
+
+                    const pulseKind = type.includes("system") || type.includes("error")
+                        ? "system"
+                        : type.includes("operator")
+                            ? "operator"
+                            : "ai";
 
                     function typeWriter() {
                         if (i < text.length) {
-                            textStr += text.charAt(i);
+                            const nextChar = text.charAt(i);
+                            textStr += nextChar;
                             
                             // Fast-forward through HTML tags so they are parsed correctly
-                            if (text.charAt(i) === '<') isTag = true;
-                            if (text.charAt(i) === '>') isTag = false;
+                            if (nextChar === '<') isTag = true;
+                            if (nextChar === '>') isTag = false;
                             
                             i++;
 
@@ -3733,6 +4708,13 @@
                                 }
                                 
                                 body.innerHTML = displayStr;
+                                if (/\S/.test(nextChar)) {
+                                    audibleChars++;
+                                    const cadence = pulseKind === "operator" ? 3 : pulseKind === "system" ? 2 : 2;
+                                    if (audibleChars % cadence === 0) {
+                                        audioEngine.playTypingPulse(pulseKind);
+                                    }
+                                }
                                 if (els.terminalOutput) els.terminalOutput.scrollTop = els.terminalOutput.scrollHeight;
                                 if (speed === 0) {
                                     typeWriter();
@@ -3757,6 +4739,7 @@
         function triggerFDLHit(damage, isHuge) {
             state.fdl_health -= damage;
             if (state.fdl_health < 0) state.fdl_health = 0;
+            audioEngine.playFdlHit(isHuge);
             
             if (els.fdlGaugeContainer) {
                 els.fdlGaugeContainer.classList.remove('shake-gauge');
@@ -3787,11 +4770,11 @@
             }
         }
 
-        function updateFDLGauge() {
+        function updateFDLGauge(useJitter = true) {
             if (state.isGameOver) return;
             
             // Jitter for the gauge bar to feel alive
-            let jitter = (Math.random() * 1.0) - 0.5; 
+            let jitter = useJitter ? (Math.random() * 1.0) - 0.5 : 0;
             let displayHealth = Math.max(0, Math.min(100, state.fdl_health + jitter));
             
             if (els.fdlPercent) els.fdlPercent.innerText = state.fdl_health.toFixed(1) + "%";
@@ -3847,6 +4830,7 @@
 
         async function triggerGameOver() {
             state.isGameOver = true;
+            audioEngine.playGameOver();
             if (els.cmdInput) els.cmdInput.disabled = true;
             if (els.gameOverOverlay) els.gameOverOverlay.style.display = 'flex';
             document.body.style.animation = "flicker 0.1s infinite";
@@ -3934,9 +4918,11 @@ IMPORTANT INSTRUCTIONS FOR YOUR NARRATIVE RESPONSE:
 - Write in the FIRST PERSON perspective as a terse, direct message back to the operator.
 - GAMEPLAY DESIGN: Hide objective targets in nearby plausible locations based on the briefing. If the player investigates the WRONG location, give them a subtle hint directing them to the correct one.
 - ${divergenceInstruction}
+- AP ECONOMY: Keep AP costs lean. Most standard actions should feel about half as expensive as a harsh tactical sim. Recon, movement, and observation should usually be low-cost unless the action is unusually dangerous or complex.
 - DO NOT act like a Game Master. Act like the agent reporting their situation.
 - Use standard sentence case. DO NOT use ALL CAPS for narrative text.
 - MAP MEMORY: Do NOT hallucinate map locations. ONLY add a location to 'new_nodes' if the agent physically discovers it or receives verified visual intel about it during this specific turn.
+- DIVERGENCE NUMBER TEXTURE: Avoid neat rounded endings like 0.120000 or 0.245500. Divergence shifts should usually include irregular lower digits so the six-decimal telemetry feels organic and measured, not fabricated.
 - KEYWORD HIGHLIGHTING: You MUST wrap important keywords in HTML <span> tags with a 'data-tooltip' attribute providing a brief description:
   <span class='kw-loc' data-tooltip='Description of location'>Location Name</span>
   <span class='kw-enemy' data-tooltip='Description of threat'>Enemy Name</span>
@@ -4083,12 +5069,15 @@ Return JSON matching schema.`;
             if (mData.type === 'side') return; // Side quests rely on manual extraction
             
             const diff = Math.abs(state.divergence - state.targetDivergence);
-            if (diff <= state.targetDivergence * 0.2 && !completedLevels.includes(currentLevelId)) {
+            if (diff <= state.targetDivergence * 0.2 && !completedLevels.includes(currentLevelId) && !state.extractionCuePlayed) {
+                state.extractionCuePlayed = true;
+                audioEngine.playResultLock(true);
                 printToTerminal(i18n[currentLang].extractSuccess, "vital-log", "var(--tm-highlight)");
             }
         }
 
         async function executeExtraction() {
+            audioEngine.playExtraction();
             await printToTerminal(i18n[currentLang].ejectInit, "vital-log", "var(--bar-hp)");
             
             const partingWords = i18n[currentLang].partingWords[state.agent.trait] || "...";
@@ -4127,6 +5116,7 @@ Return JSON matching schema.`;
             if(isSuccess) {
                 document.getElementById('res-divergence').style.color = 'var(--tm-highlight)';
                 document.getElementById('res-impact-text').innerText = t.impactSuccess;
+                setTimeout(() => audioEngine.playResultLock(true), 400);
                 
                 // Unlock logic
                 if (!completedLevels.includes(currentLevelId)) {
@@ -4140,6 +5130,7 @@ Return JSON matching schema.`;
             } else {
                 document.getElementById('res-divergence').style.color = 'var(--bar-hp)';
                 document.getElementById('res-impact-text').innerText = t.impactFailure;
+                setTimeout(() => audioEngine.playResultLock(false), 400);
             }
             
             // Agent Status
@@ -4157,7 +5148,61 @@ Return JSON matching schema.`;
             showTimeline();
         });
 
+        function normalizeAiPayload(data, isSystemInit = false) {
+            const safeData = (data && typeof data === 'object' && !Array.isArray(data)) ? data : {};
+            const normalizedInventory = Array.isArray(safeData.inventory_update)
+                ? safeData.inventory_update
+                    .filter(item => item && typeof item === 'object')
+                    .map(item => ({
+                        name: String(item.name || 'UNKNOWN ASSET'),
+                        description: String(item.description || '')
+                    }))
+                : null;
+
+            const normalizedOptions = Array.isArray(safeData.next_options)
+                ? safeData.next_options
+                    .filter(option => option && typeof option === 'object')
+                    .map(option => ({
+                        action_text: String(option.action_text || ''),
+                        est_ap: Math.max(0, Number.isFinite(Number(option.est_ap)) ? Math.round(Number(option.est_ap)) : 0)
+                    }))
+                    .filter(option => option.action_text.trim() !== '')
+                : null;
+
+            const toFiniteNumber = (value, fallback = 0) => {
+                const numeric = Number(value);
+                return Number.isFinite(numeric) ? numeric : fallback;
+            };
+
+            const toFiniteInteger = (value, fallback = 0) => {
+                const numeric = Number(value);
+                return Number.isFinite(numeric) ? Math.round(numeric) : fallback;
+            };
+
+            return {
+                narrative_response: Array.isArray(safeData.narrative_response)
+                    ? safeData.narrative_response.map(entry => String(entry || '')).filter(Boolean)
+                    : typeof safeData.narrative_response === 'string' && safeData.narrative_response.trim()
+                        ? safeData.narrative_response.trim()
+                        : (isSystemInit ? [] : ["..."]),
+                AP_cost: Math.max(0, toFiniteInteger(safeData.AP_cost, 0)),
+                HP_damage: toFiniteInteger(safeData.HP_damage, 0),
+                max_HP_damage: Math.max(0, toFiniteInteger(safeData.max_HP_damage, 0)),
+                divergence_shift: toFiniteNumber(safeData.divergence_shift, 0),
+                chronal_rejection: Boolean(safeData.chronal_rejection),
+                current_node: String(safeData.current_node || state.currentNode || 'UNKNOWN'),
+                fdl_health_bonus: toFiniteNumber(safeData.fdl_health_bonus, 0),
+                inventory_update: normalizedInventory,
+                next_options: normalizedOptions,
+                new_nodes: Array.isArray(safeData.new_nodes)
+                    ? safeData.new_nodes.map(node => String(node || '').trim()).filter(Boolean)
+                    : [],
+                intel_acquired: typeof safeData.intel_acquired === 'string' ? safeData.intel_acquired.trim() : ''
+            };
+        }
+
         async function applyGameStateChanges(data, isSystemInit = false) {
+            data = normalizeAiPayload(data, isSystemInit);
             const sysLogs = [];
 
             if (data.chronal_rejection) {
@@ -4305,8 +5350,19 @@ Return JSON matching schema.`;
                 els.cmdInput.focus();
             }
         });
+
+        els.btnReturnMissionSelect?.addEventListener('click', async () => {
+            closeSettingsModal();
+            await exitActiveMission('timeline-screen');
+        });
+
+        els.btnReturnTitle?.addEventListener('click', async () => {
+            closeSettingsModal();
+            await exitActiveMission('title-screen');
+        });
         
         document.getElementById('btn-eject')?.addEventListener('click', () => {
+             audioEngine.playMissionButtonPress();
              if (!state.tutorialActive) processCommand("[EXTRACT]", false, true);
         });
 
@@ -4418,6 +5474,24 @@ Return JSON matching schema.`;
             setAiConnectionState('offline');
         });
 
+        document.getElementById('settings-audio-enabled')?.addEventListener('change', (e) => {
+            settings.audioEnabled = e.target.checked;
+            audioEngine.applySettings(settings);
+            syncBgmPlayback();
+        });
+
+        document.getElementById('settings-se-volume')?.addEventListener('input', (e) => {
+            settings.seVolume = parseInt(e.target.value, 10);
+            updateAudioVolumeLabels();
+            audioEngine.applySettings(settings);
+        });
+
+        document.getElementById('settings-bgm-volume')?.addEventListener('input', (e) => {
+            settings.bgmVolume = parseInt(e.target.value, 10);
+            updateAudioVolumeLabels();
+            updateBgmVolume();
+        });
+
         document.getElementById('settings-api-key')?.addEventListener('input', (e) => {
             settings.apiKey = e.target.value;
             settingsStatusKey = settings.apiKey.trim() ? 'settingsStatusSaved' : 'settingsStatusMissing';
@@ -4440,10 +5514,15 @@ Return JSON matching schema.`;
             settings.textSpeed = parseInt(document.getElementById('settings-text-speed')?.value || settings.textSpeed, 10);
             settings.model = (document.getElementById('settings-model-select')?.value || defaultModelName).trim() || defaultModelName;
             settings.apiKey = document.getElementById('settings-api-key')?.value.trim() || '';
+            settings.audioEnabled = document.getElementById('settings-audio-enabled')?.checked ?? settings.audioEnabled;
+            settings.seVolume = parseInt(document.getElementById('settings-se-volume')?.value || settings.seVolume, 10);
+            settings.bgmVolume = parseInt(document.getElementById('settings-bgm-volume')?.value || settings.bgmVolume, 10);
             currentLang = settings.language;
             saveSettings();
             applyTheme(settings.theme);
             applyLanguage();
+            audioEngine.applySettings(settings);
+            syncBgmPlayback();
             settingsStatusKey = settings.apiKey ? 'settingsStatusSaved' : 'settingsStatusMissing';
             updateSettingsStatus();
             setAiConnectionState('offline');
@@ -4466,6 +5545,8 @@ Return JSON matching schema.`;
             saveSettings();
             applyTheme(settings.theme);
             applyLanguage();
+            audioEngine.applySettings(settings);
+            syncBgmPlayback();
             syncSettingsControls();
             setAiConnectionState('offline');
         });
@@ -4473,12 +5554,90 @@ Return JSON matching schema.`;
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeSettingsModal();
         });
+
+        document.addEventListener('pointerdown', () => {
+            audioEngine.unlock();
+            titleBgmUnlocked = true;
+            syncBgmPlayback();
+        }, { once: true });
+
+        document.addEventListener('mouseover', (e) => {
+            const interactive = e.target.closest('button, .btn-theme-toggle, .lang-btn, #input-trigger');
+            if (!interactive) return;
+            if (interactive.contains(e.relatedTarget)) return;
+            if (!audioEngine.unlocked) return;
+            audioEngine.playHoverTick();
+        });
+
+        document.addEventListener('click', (e) => {
+            const interactive = e.target.closest('button, .btn-theme-toggle, .lang-btn, #input-trigger');
+            if (!interactive) return;
+            if (!audioEngine.unlocked) return;
+            if (e.target.closest('#btn-eject, [data-mission-id]')) return;
+            audioEngine.playRelayClick();
+        });
+
+        document.getElementById('se-debug-list')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-se-debug]');
+            if (!btn) return;
+
+            const seType = btn.dataset.seDebug;
+            audioEngine.unlock();
+
+            switch (seType) {
+                case 'hover':
+                    audioEngine.playHoverTick();
+                    break;
+                case 'click':
+                    audioEngine.playRelayClick();
+                    break;
+                case 'system':
+                    audioEngine.playTypingPulse('system');
+                    break;
+                case 'operator':
+                    audioEngine.playTypingPulse('operator');
+                    break;
+                case 'ai':
+                    audioEngine.playTypingPulse('ai');
+                    break;
+                case 'nixie':
+                    audioEngine.playNixieTick();
+                    break;
+                case 'switch':
+                    audioEngine.playChannelSwitch();
+                    break;
+                case 'fdl-small':
+                    audioEngine.playFdlHit(false);
+                    break;
+                case 'fdl-large':
+                    audioEngine.playFdlHit(true);
+                    break;
+                case 'extract':
+                    audioEngine.playExtraction();
+                    break;
+                case 'success':
+                    audioEngine.playResultLock(true);
+                    break;
+                case 'failure':
+                    audioEngine.playResultLock(false);
+                    break;
+                case 'gameover':
+                    audioEngine.playGameOver();
+                    break;
+                default:
+                    break;
+            }
+        });
         
         // Initialize Progress
         loadProgress();
         updateResetButtonVisibility();
         syncSettingsControls();
         applyLanguage();
+        audioEngine.applySettings(settings);
+        updateBgmVolume();
+        updateAudioVolumeLabels();
+        syncBgmPlayback();
         updateAiConnectionIndicator();
 
     </script>
