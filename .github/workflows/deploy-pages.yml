@@ -34,6 +34,8 @@ jobs:
         run: |
           mkdir -p site
           cp "CHRONOS ENGINE.html" "site/index.html"
+          cp -R assets "site/assets"
+          if [ -f "run_local.bat" ]; then cp "run_local.bat" "site/run_local.bat"; fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
