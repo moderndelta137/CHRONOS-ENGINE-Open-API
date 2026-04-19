@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CHRONOS ENGINE - Master Terminal</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/styles/tailwind.generated.css">
     <style>
         /* Dynamic Theme Variables */
@@ -986,11 +987,31 @@
         /* Tutorial Effects */
         .tutorial-highlight {
             position: relative !important;
-            z-index: 310 !important;
+            z-index: 345 !important;
             box-shadow: 0 0 0 2px var(--tm-bg), 0 0 0 4px var(--tm-highlight), 0 0 30px var(--tm-highlight) !important;
             background-color: var(--tm-panel) !important;
             border-radius: 4px;
             transition: all 0.3s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #settings-modal .settings-shell {
+            width: min(94vw, 1380px);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 1280px) {
+            .settings-grid {
+                grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.35fr) minmax(0, 1fr);
+            }
         }
     </style>
 </head>
@@ -1001,7 +1022,7 @@
 
     <div id="settings-modal" class="hidden fixed inset-0 z-[320] items-center justify-center p-4 md:p-8">
         <div id="settings-backdrop" class="absolute inset-0 bg-black/85 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto border-2 border-sys-highlight bg-sys-panel shadow-[0_0_40px_var(--tm-shadow)] p-5 md:p-8">
+        <div class="settings-shell relative max-h-[90vh] overflow-y-auto border-2 border-sys-highlight bg-sys-panel shadow-[0_0_40px_var(--tm-shadow)] p-5 md:p-8">
             <div class="flex items-start justify-between gap-4 border-b border-sys-border pb-4 mb-5">
                 <div>
                     <div class="text-sys-highlight text-2xl md:text-3xl font-bold tracking-widest" id="settings-title">SYSTEM OPTIONS</div>
@@ -1012,7 +1033,7 @@
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+            <div class="settings-grid">
                 <div class="panel">
                     <div class="panel-header" id="settings-display-title">Display & Interface</div>
                     <label class="text-sys-dim text-sm mb-2" for="settings-theme-select" id="settings-theme-label">Theme Preset</label>
@@ -1037,7 +1058,7 @@
                     <div class="text-sys-dim text-xs" id="settings-speed-help">Controls typewriter pacing for operator, system, and agent transmissions.</div>
                 </div>
 
-                <div class="panel">
+                <div class="panel" id="settings-ai-panel">
                     <div class="panel-header" id="settings-ai-title">AI Connection</div>
                     <label class="text-sys-dim text-sm mb-2" for="settings-model-select" id="settings-model-label">Model Name</label>
                     <select id="settings-model-select" class="w-full bg-black border border-sys-border text-sys-text px-3 py-2 mb-2 outline-none">
@@ -1055,6 +1076,9 @@
                     <div class="text-sys-dim text-xs mb-4" id="settings-key-help">Stored only in this browser via localStorage. Your own billing/account usage applies.</div>
 
                     <div class="flex flex-wrap gap-3">
+                        <button id="btn-ai-setup-tutorial" class="border border-sys-border text-sys-dim px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">
+                            [ VIEW SETUP TUTORIAL ]
+                        </button>
                         <button id="btn-test-api-key" class="border border-sys-border text-sys-dim px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">
                             [ TEST CONNECTION ]
                         </button>
@@ -1100,6 +1124,9 @@
                     </button>
                     <button id="btn-reset-settings-defaults" class="border border-sys-border text-sys-dim px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer">
                         [ RESET DEFAULTS ]
+                    </button>
+                    <button id="btn-reset-data-settings" data-reset-progress class="border border-red-900 text-red-600 px-4 py-2 hover:bg-red-900 hover:text-white transition-colors font-bold cursor-pointer">
+                        [ RESET PROGRESS ]
                     </button>
                 </div>
 
@@ -1193,7 +1220,7 @@
         </svg>
 
         <div class="absolute top-4 left-4 z-[210] flex gap-2 md:gap-4">
-            <button id="btn-reset-data" class="hidden border border-red-900 text-red-600 px-3 md:px-4 py-2 hover:bg-red-900 hover:text-white transition-colors font-bold cursor-pointer text-sm md:text-base">
+            <button id="btn-reset-data" data-reset-progress class="hidden border border-red-900 text-red-600 px-3 md:px-4 py-2 hover:bg-red-900 hover:text-white transition-colors font-bold cursor-pointer text-sm md:text-base">
                 [ RESET ]
             </button>
             <button class="btn-theme-toggle border border-sys-border text-sys-dim px-3 md:px-4 py-2 hover:text-sys-text hover:bg-sys-highlight/20 transition-colors font-bold cursor-pointer text-sm md:text-base">
@@ -1461,8 +1488,10 @@
     <!-- Custom Hover/Touch Tooltip -->
     <div id="global-tooltip"></div>
 
+    <div id="tutorial-overlay" class="hidden fixed inset-0 bg-black/80 z-[335] transition-opacity"></div>
+
     <!-- TUTORIAL DIALOG -->
-    <div id="tutorial-dialog" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md z-[350] bg-sys-panel border-2 border-sys-highlight p-6 flex flex-col text-left shadow-[0_0_30px_var(--tm-shadow)] backdrop-blur-md">
+    <div id="tutorial-dialog" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md z-[360] bg-sys-panel border-2 border-sys-highlight p-6 flex flex-col text-left shadow-[0_0_30px_var(--tm-shadow)] backdrop-blur-md">
         <div id="tutorial-text" class="text-sys-text text-lg md:text-xl mb-6 whitespace-pre-wrap leading-relaxed">...</div>
         <div class="flex justify-between border-t border-sys-border pt-4">
             <button id="btn-tutorial-skip" class="text-sys-dim hover:text-sys-text transition-colors font-bold cursor-pointer text-xl tracking-widest">[ SKIP TUTORIAL >> ]</button>
@@ -1471,19 +1500,6 @@
     </div>
 
     <div id="screen-container" class="hidden">
-        <!-- TUTORIAL OVERLAY (Moved inside screen-container to share stacking context with panels) -->
-        <!-- The massive box-shadow ensures the darkness extends to the screen edges even during mobile scrolling -->
-        <div id="tutorial-overlay" class="hidden absolute -inset-4 lg:-inset-6 bg-black/80 z-[300] transition-opacity" style="box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8);"></div>
-        
-        <!-- TUTORIAL DIALOG (Moved inside to share stacking context) -->
-        <div id="tutorial-dialog" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md z-[350] bg-sys-panel border-2 border-sys-highlight p-6 flex flex-col text-left shadow-[0_0_30px_var(--tm-shadow)] backdrop-blur-md">
-            <div id="tutorial-text" class="text-sys-text text-lg md:text-xl mb-6 whitespace-pre-wrap leading-relaxed">...</div>
-            <div class="flex justify-between border-t border-sys-border pt-4">
-                <button id="btn-tutorial-skip" class="text-sys-dim hover:text-sys-text transition-colors font-bold cursor-pointer text-xl tracking-widest">[ SKIP >> ]</button>
-                <button id="btn-tutorial-next" class="text-sys-highlight hover:text-white transition-colors font-bold cursor-pointer text-xl tracking-widest">[ NEXT > ]</button>
-            </div>
-        </div>
-
         <!-- INTEL MODAL (Moved inside to share stacking context and CRT curve) -->
         <div id="intel-modal" class="hidden absolute inset-0 bg-black/80 z-[400] flex items-center justify-center backdrop-blur-sm p-4">
             <div class="border border-sys-highlight bg-sys-bg w-[600px] max-w-full max-h-[80vh] flex flex-col shadow-[0_0_30px_var(--tm-shadow)]">
@@ -1659,6 +1675,8 @@
         const geminiRateLimitRpm = 0;
         const geminiRateLimitWindowMs = 60 * 1000;
         const settingsStorageKey = 'chronos_settings_v1';
+        const aiTutorialDoneStorageKey = 'chronos_ai_setup_tutorial_done';
+        const aiVerifiedStorageKey = 'chronos_ai_setup_verified';
         const defaultSettings = {
             theme: 'default',
             language: 'en',
@@ -2840,6 +2858,7 @@
                 settingsRefreshModels: "[ REFRESH MODELS ]",
                 settingsTest: "[ TEST CONNECTION ]",
                 settingsClearKey: "[ CLEAR KEY ]",
+                settingsAiTutorial: "[ VIEW SETUP TUTORIAL ]",
                 settingsStatusMissing: "No API key configured.",
                 settingsStatusSaved: "Settings saved.",
                 settingsStatusCleared: "Stored API key cleared.",
@@ -2911,6 +2930,11 @@
                 tut3: "MASTER TERMINAL\nUse this interface to issue commands. You can select pre-calculated actions or use MANUAL OVERRIDE to type custom instructions.",
                 tut4: "FDL INTEGRITY\nOur 2038 subterranean bunker is under attack. This gauge depletes in real-time. If it hits 0% before you fix the timeline, we die.",
                 tut5: "DIVERGENCE\nThe measure of timeline alteration. Your goal is to match the TARGET value. Interacting with orange Nexus keywords will drastically shift this.",
+                aiTut1: "AI CONNECTION\nThis panel is where you configure the model that drives mission narration and state updates. You only need to set it up once on this device.",
+                aiTut2: "PLAYER API KEY\nPaste your Gemini API key here first. The game stores it only in this browser so you can keep using your own account.",
+                aiTut3: "REFRESH MODELS\nAfter pasting the key, press REFRESH MODELS to query Gemini and load the models your API key can actually use.",
+                aiTut4: "MODEL NAME\nPick the model you want from this list after the refresh finishes. Choose the exact model you want the game to call during missions.",
+                aiTut5: "TEST CONNECTION\nPress TEST CONNECTION last to verify the selected key and model can generate a valid response before you start playing.",
                 tutBtn: "[ ACKNOWLEDGE ]",
                 tutSkip: "[ SKIP >> ]",
                 resetData: "[ RESET PROGRESS ]",
@@ -3083,6 +3107,7 @@
             setText('btn-refresh-models', t.settingsRefreshModels || "[ REFRESH MODELS ]");
             setText('btn-test-api-key', t.settingsTest);
             setText('btn-clear-api-key', t.settingsClearKey);
+            setText('btn-ai-setup-tutorial', t.settingsAiTutorial || "[ VIEW SETUP TUTORIAL ]");
             setText('ui-fdl-integrity', t.fdlIntegrity);
             setText('ui-agent-profile', t.agentProfile);
             setText('ui-skills-assets', t.skillsAssets);
@@ -3126,11 +3151,11 @@
             setText('btn-intro-skip', t.btnIntroSkip);
             setText('btn-tutorial-skip', t.tutSkip);
             
-            if (document.getElementById('btn-reset-data')) {
-                if (document.getElementById('btn-reset-data').innerText !== t.dataPurged) {
-                    setText('btn-reset-data', t.resetData);
+            document.querySelectorAll('[data-reset-progress]').forEach(btn => {
+                if (btn.innerText !== t.dataPurged) {
+                    btn.innerText = t.resetData;
                 }
-            }
+            });
             
             setText('ui-brf-header', t.brfHeader);
             setText('ui-brf-tgt', t.brfTarget);
@@ -3190,6 +3215,22 @@
 
         function getConfiguredModel() {
             return (settings.model || defaultModelName).trim() || defaultModelName;
+        }
+
+        function clearAiVerificationState() {
+            localStorage.removeItem(aiVerifiedStorageKey);
+        }
+
+        function markAiVerificationState() {
+            localStorage.setItem(aiVerifiedStorageKey, 'true');
+        }
+
+        function shouldShowAiSetupTutorial() {
+            const firstLaunch = state.runCount === 0 && unlockedLevels.length <= 1 && completedLevels.length === 0;
+            const tutorialAlreadyShown = localStorage.getItem(aiTutorialDoneStorageKey) === 'true';
+            const hasVerifiedConnection = localStorage.getItem(aiVerifiedStorageKey) === 'true';
+            const missingApiKey = !getConfiguredApiKey();
+            return firstLaunch && !tutorialAlreadyShown && (missingApiKey || !hasVerifiedConnection);
         }
 
         function setAiConnectionState(nextState) {
@@ -3420,6 +3461,8 @@
             el.style.color = customColor || (settingsStatusKey === 'settingsStatusOk' ? 'var(--tm-highlight)' : settingsStatusKey === 'settingsStatusFailed' ? 'var(--bar-hp)' : 'var(--tm-dim)');
         }
 
+        let pendingStartFlow = null;
+
         function syncSettingsControls() {
             const themeSelect = document.getElementById('settings-theme-select');
             const languageSelect = document.getElementById('settings-language-select');
@@ -3453,9 +3496,17 @@
             }
         }
 
-        function closeSettingsModal() {
+        async function closeSettingsModal() {
+            if (state.tutorialActive && activeTutorialType === 'ai-setup') {
+                endTutorial();
+            }
             document.getElementById('settings-modal')?.classList.add('hidden');
             document.getElementById('settings-modal')?.classList.remove('flex');
+            if (pendingStartFlow) {
+                const resumeFlow = pendingStartFlow;
+                pendingStartFlow = null;
+                await resumeFlow();
+            }
         }
 
         async function testApiConnection() {
@@ -3499,6 +3550,7 @@
                 }
                 settingsStatusKey = 'settingsStatusOk';
                 updateSettingsStatus();
+                markAiVerificationState();
                 setAiConnectionState('online');
             } catch (error) {
                 const debug = setLastAiDebugInfo(error, {
@@ -3710,39 +3762,51 @@
         }
 
         function updateResetButtonVisibility() {
-            const btn = document.getElementById('btn-reset-data');
-            if (!btn) return;
-            if (
+            const buttons = Array.from(document.querySelectorAll('[data-reset-progress]'));
+            if (buttons.length === 0) return;
+            const hasSaveData =
                 localStorage.getItem('chronos_unlocked') ||
                 localStorage.getItem('chronos_completed') ||
-                localStorage.getItem(campaignStateStorageKey)
+                localStorage.getItem(campaignStateStorageKey);
+            if (
+                hasSaveData
             ) {
-                btn.classList.remove('hidden');
-            } else {
-                btn.classList.add('hidden');
+                buttons.forEach(btn => btn.classList.remove('hidden'));
+                return;
             }
+            buttons.forEach(btn => btn.classList.add('hidden'));
         }
 
-        document.getElementById('btn-reset-data')?.addEventListener('click', () => {
+        document.querySelectorAll('[data-reset-progress]').forEach(btn => btn.addEventListener('click', () => {
             localStorage.removeItem('chronos_unlocked');
             localStorage.removeItem('chronos_completed');
             localStorage.removeItem(campaignStateStorageKey);
             localStorage.removeItem('chronos_tutorial_done');
+            localStorage.removeItem(aiTutorialDoneStorageKey);
+            localStorage.removeItem(aiVerifiedStorageKey);
             unlockedLevels = ['nexus-1'];
             completedLevels = [];
             state.divergence = 0.0;
             state.fdl_health = 100.0;
             
-            const btn = document.getElementById('btn-reset-data');
             const originalText = i18n[currentLang].resetData;
-            btn.innerText = i18n[currentLang].dataPurged;
+            document.querySelectorAll('[data-reset-progress]').forEach(resetBtn => {
+                resetBtn.innerText = i18n[currentLang].dataPurged;
+            });
             setTimeout(() => { 
-                btn.innerText = originalText; 
+                document.querySelectorAll('[data-reset-progress]').forEach(resetBtn => {
+                    resetBtn.innerText = originalText;
+                });
                 updateResetButtonVisibility(); 
             }, 2000);
-        });
+        }));
 
         async function showTimeline() {
+            if (els.gameOverOverlay) {
+                els.gameOverOverlay.style.display = 'none';
+                els.gameOverOverlay.classList.add('hidden');
+            }
+            state.isGameOver = false;
             await switchScreen('timeline-screen');
             updateTimelineDivergence();
             renderTimeline();
@@ -4153,6 +4217,31 @@
 
         let animationFrameId;
 
+        function clearTransientScreenState() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (els.gameOverOverlay) {
+                els.gameOverOverlay.style.display = 'none';
+                els.gameOverOverlay.classList.add('hidden');
+            }
+            document.getElementById('result-screen')?.classList.add('hidden');
+            document.getElementById('briefing-screen')?.classList.add('hidden');
+            document.getElementById('timeline-screen')?.classList.add('hidden');
+            document.getElementById('screen-container')?.classList.add('hidden');
+            document.getElementById('intro-screen')?.classList.add('hidden');
+            document.getElementById('title-screen')?.classList.remove('hidden');
+            if (els.optionsMenu) els.optionsMenu.classList.add('hidden');
+            if (els.intelModal) els.intelModal.classList.add('hidden');
+            if (els.tutorialOverlay) els.tutorialOverlay.classList.add('hidden');
+            if (els.tutorialDialog) els.tutorialDialog.classList.add('hidden');
+            document.body.style.animation = "";
+            activeScreenId = 'title-screen';
+            state.isGameOver = false;
+            state.isProcessing = false;
+        }
+
         /** --- TOOLTIP & MODAL LOGIC (Responsive/Touch adapted) --- */
         function showTooltip(target, x, y) {
             els.globalTooltip.innerHTML = target.getAttribute('data-tooltip');
@@ -4223,22 +4312,40 @@
         });
 
         /** --- TUTORIAL LOGIC --- */
-        const tutorialSequence = [
+        const missionTutorialSequence = [
             { el: 'panel-objective', textKey: 'tut1' },
             { el: 'panel-agent', textKey: 'tut2' },
             { el: 'panel-terminal', textKey: 'tut3' },
             { el: 'ui-fdl-container', textKey: 'tut4' },
             { el: 'ui-div-container', textKey: 'tut5' }
         ];
+        const aiSetupTutorialSequence = [
+            { el: 'settings-ai-panel', textKey: 'aiTut1' },
+            { el: 'settings-api-key', textKey: 'aiTut2' },
+            { el: 'btn-refresh-models', textKey: 'aiTut3' },
+            { el: 'settings-model-select', textKey: 'aiTut4' },
+            { el: 'btn-test-api-key', textKey: 'aiTut5' }
+        ];
         let currentTutorialStep = 0;
+        let activeTutorialSequence = missionTutorialSequence;
+        let activeTutorialType = 'mission';
 
-        function startTutorial() {
+        function startTutorial(sequence = missionTutorialSequence, type = 'mission') {
+            activeTutorialSequence = sequence;
+            activeTutorialType = type;
             state.tutorialActive = true;
             els.tutorialOverlay.classList.remove('hidden');
             els.tutorialDialog.classList.remove('hidden');
-            els.cmdInput.disabled = true;
+            if (type === 'mission' && els.cmdInput) {
+                els.cmdInput.disabled = true;
+            }
             currentTutorialStep = 0;
             showTutorialStep();
+        }
+
+        function startAiSetupTutorial() {
+            openSettingsModal();
+            startTutorial(aiSetupTutorialSequence, 'ai-setup');
         }
 
         function showTutorialStep() {
@@ -4246,12 +4353,12 @@
                 el.classList.remove('tutorial-highlight');
             });
 
-            if (currentTutorialStep >= tutorialSequence.length) {
+            if (currentTutorialStep >= activeTutorialSequence.length) {
                 endTutorial();
                 return;
             }
 
-            const step = tutorialSequence[currentTutorialStep];
+            const step = activeTutorialSequence[currentTutorialStep];
             const targetEl = document.getElementById(step.el);
             
             if (targetEl) {
@@ -4259,8 +4366,9 @@
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
 
-            els.tutorialText.innerText = i18n[currentLang][step.textKey];
-            els.btnTutorialNext.innerText = (currentTutorialStep === tutorialSequence.length - 1) ? i18n[currentLang].tutBtn : "[ NEXT > ]";
+            const t = { ...i18n.en, ...(i18n[currentLang] || {}) };
+            els.tutorialText.innerText = t[step.textKey];
+            els.btnTutorialNext.innerText = (currentTutorialStep === activeTutorialSequence.length - 1) ? t.tutBtn : "[ NEXT > ]";
         }
 
         function endTutorial() {
@@ -4270,8 +4378,12 @@
             document.querySelectorAll('.tutorial-highlight').forEach(el => {
                 el.classList.remove('tutorial-highlight');
             });
-            localStorage.setItem('chronos_tutorial_done', 'true');
-            if (els.cmdInput) els.cmdInput.disabled = false;
+            if (activeTutorialType === 'mission') {
+                localStorage.setItem('chronos_tutorial_done', 'true');
+                if (els.cmdInput) els.cmdInput.disabled = false;
+            } else if (activeTutorialType === 'ai-setup') {
+                localStorage.setItem(aiTutorialDoneStorageKey, 'true');
+            }
         }
 
         els.btnTutorialSkip?.addEventListener('click', endTutorial);
@@ -4323,6 +4435,7 @@
             const mLocale = mission[currentLang];
 
             state.runCount++;
+            state.fdl_health = clampCampaignFdlHealth(state.fdl_health + 10);
             state.isGameOver = false;
             state.chatHistory = [];
             state.extractionCuePlayed = false;
@@ -4344,8 +4457,9 @@
                 els.inputTrigger.innerText = "[ ESTABLISHING CHRONAL LINK... ]";
             }
             state.isProcessing = true;
-            
+
             currentDisplayedDiv = state.divergence;
+            updateFDLGauge(false);
 
             if (state.agent.name === "---") {
                 await agentProfilesReady;
@@ -4805,8 +4919,10 @@
         function gameLoop() {
             if (state.isGameOver) return;
 
-            // Pause degradation during the tutorial
-            if (!state.tutorialActive) {
+            const isTerminalScreenActive = activeScreenId === 'screen-container' && !document.getElementById('screen-container')?.classList.contains('hidden');
+
+            // FDL degradation only happens during active terminal missions.
+            if (isTerminalScreenActive && !state.tutorialActive) {
                 state.fdl_health -= state.fdl_degrade_rate;
 
                 // Ambient Bombing Hits
@@ -4832,7 +4948,10 @@
             state.isGameOver = true;
             audioEngine.playGameOver();
             if (els.cmdInput) els.cmdInput.disabled = true;
-            if (els.gameOverOverlay) els.gameOverOverlay.style.display = 'flex';
+            if (els.gameOverOverlay) {
+                els.gameOverOverlay.classList.remove('hidden');
+                els.gameOverOverlay.style.display = 'flex';
+            }
             document.body.style.animation = "flicker 0.1s infinite";
             setTimeout(() => { document.body.style.animation = ""; }, 1000);
             printToTerminal(i18n[currentLang].gameOverDesc, "error");
@@ -4842,7 +4961,10 @@
         }
 
         els.btnRestart?.addEventListener('click', () => {
-            if (els.gameOverOverlay) els.gameOverOverlay.style.display = 'none';
+            if (els.gameOverOverlay) {
+                els.gameOverOverlay.style.display = 'none';
+                els.gameOverOverlay.classList.add('hidden');
+            }
             showTimeline();
         });
 
@@ -4876,6 +4998,7 @@
                             attempt: i
                         }));
                     }
+                    markAiVerificationState();
                     setAiConnectionState('online');
                     return await response.json();
                 } catch (e) {
@@ -5397,14 +5520,24 @@ Return JSON matching schema.`;
                 settings.language = currentLang;
                 saveSettings();
                 applyLanguage();
-                
-                if (unlockedLevels.length > 1 || completedLevels.length > 0 || state.runCount > 0) {
-                    showTimeline();
-                } else {
-                    await switchScreen('intro-screen');
-                    currentSlide = 0;
-                    showSlide();
+
+                const continueStartFlow = async () => {
+                    if (unlockedLevels.length > 1 || completedLevels.length > 0 || state.runCount > 0) {
+                        showTimeline();
+                    } else {
+                        await switchScreen('intro-screen');
+                        currentSlide = 0;
+                        showSlide();
+                    }
+                };
+
+                if (shouldShowAiSetupTutorial()) {
+                    pendingStartFlow = continueStartFlow;
+                    startAiSetupTutorial();
+                    return;
                 }
+
+                await continueStartFlow();
             });
         });
 
@@ -5471,6 +5604,7 @@ Return JSON matching schema.`;
 
         document.getElementById('settings-model-select')?.addEventListener('change', (e) => {
             settings.model = e.target.value;
+            clearAiVerificationState();
             setAiConnectionState('offline');
         });
 
@@ -5496,12 +5630,14 @@ Return JSON matching schema.`;
             settings.apiKey = e.target.value;
             settingsStatusKey = settings.apiKey.trim() ? 'settingsStatusSaved' : 'settingsStatusMissing';
             updateSettingsStatus();
+            clearAiVerificationState();
             setAiConnectionState('offline');
         });
 
         document.getElementById('btn-open-settings')?.addEventListener('click', openSettingsModal);
         document.getElementById('btn-close-settings')?.addEventListener('click', closeSettingsModal);
         document.getElementById('settings-backdrop')?.addEventListener('click', closeSettingsModal);
+        document.getElementById('btn-ai-setup-tutorial')?.addEventListener('click', startAiSetupTutorial);
         document.getElementById('btn-refresh-models')?.addEventListener('click', () => {
             const apiKey = document.getElementById('settings-api-key')?.value.trim() || getConfiguredApiKey();
             fetchAvailableModels(apiKey, settings.model);
@@ -5525,7 +5661,9 @@ Return JSON matching schema.`;
             syncBgmPlayback();
             settingsStatusKey = settings.apiKey ? 'settingsStatusSaved' : 'settingsStatusMissing';
             updateSettingsStatus();
-            setAiConnectionState('offline');
+            if (!localStorage.getItem(aiVerifiedStorageKey)) {
+                setAiConnectionState('offline');
+            }
         });
 
         document.getElementById('btn-clear-api-key')?.addEventListener('click', () => {
@@ -5534,6 +5672,7 @@ Return JSON matching schema.`;
             saveSettings();
             settingsStatusKey = 'settingsStatusCleared';
             updateSettingsStatus();
+            clearAiVerificationState();
             setAiConnectionState('offline');
         });
 
@@ -5548,6 +5687,7 @@ Return JSON matching schema.`;
             audioEngine.applySettings(settings);
             syncBgmPlayback();
             syncSettingsControls();
+            clearAiVerificationState();
             setAiConnectionState('offline');
         });
 
@@ -5631,6 +5771,7 @@ Return JSON matching schema.`;
         
         // Initialize Progress
         loadProgress();
+        clearTransientScreenState();
         updateResetButtonVisibility();
         syncSettingsControls();
         applyLanguage();
