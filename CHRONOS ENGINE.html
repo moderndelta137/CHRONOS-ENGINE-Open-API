@@ -847,8 +847,55 @@
 
             #briefing-screen > .w-full.max-w-6xl > div {
                 min-height: 0;
-                max-height: none;
+                max-height: min(42dvh, 32rem);
                 padding: 1rem;
+            }
+
+            .briefing-copy-scroll {
+                padding-right: 0.2rem;
+            }
+
+            .briefing-agent-hero {
+                grid-template-columns: minmax(0, 1fr) 6.7rem;
+                gap: 0.85rem;
+            }
+
+            .briefing-agent-portrait-frame {
+                width: 6.7rem;
+                margin: 0;
+                padding: 0.45rem;
+            }
+
+            #brf-agent-name {
+                font-size: clamp(2.1rem, 9vw, 3rem);
+                line-height: 0.92;
+            }
+
+            #brf-agent-spec,
+            #brf-agent-personality {
+                min-height: 1.9rem;
+                padding: 0.25rem 0.6rem;
+                font-size: 0.95rem;
+            }
+
+            .briefing-agent-bookmarks {
+                flex-direction: row;
+                gap: 0.6rem;
+                overflow-x: auto;
+                padding-bottom: 0.2rem;
+                margin-top: 0.75rem;
+                scrollbar-width: thin;
+            }
+
+            .briefing-agent-bookmark {
+                min-width: 8.4rem;
+                flex: 0 0 auto;
+                padding: 0.7rem 0.8rem 0.6rem;
+            }
+
+            .briefing-agent-bookmark-name {
+                font-size: 1.15rem;
+                text-align: left;
             }
 
             #briefing-screen > .flex.justify-center.gap-4 {
@@ -889,6 +936,9 @@
             }
 
             #screen-container > .flex.flex-col.lg\\:flex-row.gap-4.shrink-0.w-full.mb-4.items-stretch.lg\\:h-52 {
+                display: grid;
+                grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+                align-items: stretch;
                 margin-bottom: 0;
                 gap: 0.75rem;
             }
@@ -897,37 +947,142 @@
             #panel-agent,
             #screen-container > .flex.flex-col.lg\\:flex-row.gap-4.shrink-0.w-full.mb-4.items-stretch.lg\\:h-52 > .panel:last-child {
                 min-height: auto;
+                min-width: 0;
+            }
+
+            #panel-objective {
+                grid-column: 1 / -1;
+                min-height: 0;
+            }
+
+            #panel-agent,
+            #screen-container > .flex.flex-col.lg\\:flex-row.gap-4.shrink-0.w-full.mb-4.items-stretch.lg\\:h-52 > .panel:last-child {
+                min-height: 10.75rem;
             }
 
             #mission-objective {
-                max-height: none;
+                max-height: 5.5rem;
+                min-height: 0;
+                overflow-y: auto;
+                padding-right: 0.15rem;
+                font-size: 1.05rem;
+                line-height: 1.25;
+            }
+
+            #panel-objective .mt-auto.shrink-0.grid.grid-cols-2.gap-2 {
+                gap: 0.55rem;
+            }
+
+            #btn-intel,
+            #btn-eject {
+                padding: 0.7rem 0.65rem;
+                font-size: 0.9rem;
+                line-height: 1.1;
+                letter-spacing: 0.08em;
+            }
+
+            #asset-tags {
+                margin-bottom: 0.5rem;
+                gap: 0.35rem;
+            }
+
+            #agent-name-tag,
+            #agent-trait-tag,
+            #agent-spec-tag {
+                font-size: 0.76rem !important;
+                padding: 0.18rem 0.45rem !important;
+                max-width: 100%;
+            }
+
+            #panel-agent .flex.items-center.gap-3 {
+                gap: 0.45rem;
+                margin-bottom: 0.35rem;
+            }
+
+            #panel-agent .text-xs.text-sys-dim.w-4,
+            #hp-text,
+            #ap-text {
+                font-size: 0.7rem;
+            }
+
+            #agent-skills-inv {
+                max-height: 3.2rem;
+                min-height: 0;
+                padding-right: 0.1rem;
+            }
+
+            #agent-skills-inv .asset-item {
+                font-size: 0.8rem;
+                padding: 0.15rem 0.4rem;
+            }
+
+            #screen-container > .flex.flex-col.lg\\:flex-row.gap-4.shrink-0.w-full.mb-4.items-stretch.lg\\:h-52 > .panel:last-child {
+                padding-bottom: 0.65rem;
             }
 
             #current-node-label {
-                font-size: 1.05rem;
+                font-size: 0.92rem;
+                line-height: 1.2;
+                margin-bottom: 0.45rem;
+            }
+
+            #nodes-list {
+                min-height: 0;
+                max-height: 4.6rem;
+                padding-right: 0.1rem;
+            }
+
+            #nodes-list .boxed-item {
+                font-size: 0.84rem;
+                padding: 0.25rem 0.4rem;
+                margin-bottom: 0.35rem;
             }
 
             #panel-terminal {
-                min-height: 48dvh;
+                min-height: 42dvh;
             }
 
             #ui-terminal-title {
                 font-size: 0.8rem;
             }
 
-            #btn-eject {
-                padding: 0.4rem 0.55rem;
-                font-size: 0.82rem;
+            #terminal-output {
+                min-height: 24dvh;
+                padding-bottom: 0.8rem;
             }
 
-            #terminal-output {
-                min-height: 28dvh;
+            .log-ai {
+                font-size: 1rem;
+                line-height: 1.42;
+            }
+
+            .log-operator {
+                max-width: 100%;
+                padding: 0.45rem 0.75rem;
+                margin-bottom: 1rem;
             }
 
             #ui-fdl-container,
             #ui-div-container {
                 padding-left: 0.85rem;
                 padding-right: 0.85rem;
+            }
+
+            #screen-container > .flex.flex-col.lg\\:flex-row.justify-between.lg\\:items-end.mt-4.shrink-0.gap-4.lg\\:gap-6 {
+                margin-top: 0;
+                gap: 0.7rem;
+            }
+
+            #ui-fdl-integrity {
+                font-size: 1rem;
+            }
+
+            #fdl-gauge-container {
+                height: 1.6rem;
+            }
+
+            #fdl-percent {
+                font-size: 1.55rem;
             }
 
             #divergence-value {
@@ -937,6 +1092,10 @@
             #divergence-diff,
             #divergence-target {
                 font-size: 1rem !important;
+            }
+
+            #timeline-tree .nexus-node {
+                width: min(74vw, 220px);
             }
 
             #game-over-overlay {
