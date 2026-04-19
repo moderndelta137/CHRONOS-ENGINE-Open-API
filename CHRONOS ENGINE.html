@@ -1481,13 +1481,16 @@
                  <div class="border-b border-sys-border pb-2 mb-4 shrink-0">
                      <span class="text-sys-highlight font-bold text-xl" id="ui-brf-asset">AGENT ASSET PROFILE</span>
                  </div>
-                 <div class="flex items-end gap-4 mb-4 shrink-0">
-                     <div class="text-4xl lg:text-5xl font-bold text-sys-text news-font tracking-wider" id="brf-agent-name"></div>
-                     <div class="text-sys-highlight border border-sys-highlight px-2 py-1 text-sm mb-1" id="brf-agent-spec"></div>
-                 </div>
-                 <div class="grid grid-cols-2 gap-4 mb-4 text-sm shrink-0">
-                     <div><span class="text-sys-dim" id="ui-brf-dob">DOB:</span> <span class="text-sys-text ml-1" id="brf-agent-dob"></span></div>
-                     <div><span class="text-sys-dim" id="ui-brf-age">AGE:</span> <span class="text-sys-text ml-1" id="brf-agent-age"></span></div>
+                <div class="flex flex-wrap items-end gap-3 mb-4 shrink-0">
+                    <div class="text-4xl lg:text-5xl font-bold text-sys-text news-font tracking-wider" id="brf-agent-name"></div>
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <div class="inline-flex items-center min-h-[2.25rem] border border-sys-highlight px-3 py-1 text-sm text-sys-highlight bg-sys-highlight/10 tracking-wide shadow-[0_0_12px_var(--tm-shadow)]" id="brf-agent-spec"></div>
+                        <span class="inline-flex items-center min-h-[2.25rem] border border-sys-highlight px-3 py-1 text-sm text-sys-highlight bg-sys-highlight/10 tracking-wide shadow-[0_0_12px_var(--tm-shadow)]" id="brf-agent-personality"></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4 text-sm shrink-0">
+                    <div><span class="text-sys-dim" id="ui-brf-dob">DOB:</span> <span class="text-sys-text ml-1" id="brf-agent-dob"></span></div>
+                    <div><span class="text-sys-dim" id="ui-brf-age">AGE:</span> <span class="text-sys-text ml-1" id="brf-agent-age"></span></div>
                      <div><span class="text-sys-dim" id="ui-brf-h">HEIGHT:</span> <span class="text-sys-text ml-1" id="brf-agent-h"></span></div>
                      <div><span class="text-sys-dim" id="ui-brf-w">WEIGHT:</span> <span class="text-sys-text ml-1" id="brf-agent-w"></span></div>
                  </div>
@@ -3010,13 +3013,15 @@
                 brfHeader: "MISSION BRIEFING", brfTarget: "TARGET:", brfTelemetry: "DIVERGENCE TELEMETRY", brfCur: "CURRENT:",
                 brfTgtDiv: "TARGET:", brfDiff: "DIFF:", brfObj: "PRIMARY OBJECTIVE:", brfImp: "STRATEGIC IMPORTANCE (WW3 PREVENTION):",
                 brfDesc: "SITUATION BRIEFING:",
-                brfAsset: "AGENT ASSET PROFILE", brfDob: "DOB:", brfAge: "AGE:", brfH: "HEIGHT:", brfW: "WEIGHT:",
+                brfAsset: "AGENT ASSET PROFILE", brfPersonality: "PERSONALITY", brfDob: "DOB:", brfAge: "AGE:", brfH: "HEIGHT:", brfW: "WEIGHT:",
                 brfBg: "BACKGROUND:", brfPhys: "PHYSICAL STATUS:", brfMent: "MENTAL STATUS:", brfCancel: "[ CANCEL ]", brfStart: "[ COMMENCE INSERTION ]",
                 traits: { "METHODICAL": "METHODICAL", "BRUTE-FORCE": "BRUTE-FORCE", "STEALTH": "STEALTH", "SOCIAL": "SOCIAL" },
                 specs: { "Forensic Analyst": "FORENSIC ANALYST", "Heavy Munitions": "HEAVY MUNITIONS", "Covert Infiltrator": "COVERT INFILTRATOR", "CIA Operative": "CIA OPERATIVE" },
                 tooltips: {
                     obj: "Current primary directive for this timeline insertion.",
                     agent: "Real-time biological telemetry and manifest of the deployed operative.",
+                    brfSpec: "Operative specialty: {value}.",
+                    brfPersonality: "Personality profile: {value}. This shapes how the operative speaks to you during missions.",
                     hp: "Physical health of the agent. Lethal damage requires deploying a replacement.",
                     ap: "Action Points. Depleted by exertion and timeline alterations. High AP = stability.",
                     loc: "Last known chronological coordinates of the operative.",
@@ -3087,13 +3092,15 @@
                 brfHeader: "ミッション・ブリーフィング", brfTarget: "ターゲット:", brfTelemetry: "ダイバージェンス・テレメトリ", brfCur: "現在値:",
                 brfTgtDiv: "目標値:", brfDiff: "差分:", brfObj: "主要任務:", brfImp: "戦略的重要事項 (WW3回避):",
                 brfDesc: "状況説明:",
-                brfAsset: "エージェント・プロファイル", brfDob: "生年月日:", brfAge: "年齢:", brfH: "身長:", brfW: "体重:",
+                brfAsset: "エージェント・プロファイル", brfPersonality: "個性", brfDob: "生年月日:", brfAge: "年齢:", brfH: "身長:", brfW: "体重:",
                 brfBg: "経歴:", brfPhys: "身体的状態:", brfMent: "精神的状態:", brfCancel: "[ キャンセル ]", brfStart: "[ 潜入開始 ]",
                 traits: { "METHODICAL": "論理的", "BRUTE-FORCE": "力押し", "STEALTH": "隠密", "SOCIAL": "社交的" },
                 specs: { "Forensic Analyst": "法医学アナリスト", "Heavy Munitions": "重火器専門", "Covert Infiltrator": "潜入工作員", "CIA Operative": "CIA工作員" },
                 tooltips: {
                     obj: "このタイムライン潜入における現在の主要指令。",
                     agent: "現在展開中の時間工作員のリアルタイム生体テレメトリーと名簿。",
+                    brfSpec: "工作員の専門分野: {value}。",
+                    brfPersonality: "個性プロファイル: {value}。ミッション中の口調や伝え方に反映されます。",
                     hp: "エージェントの身体的健康状態。致死的なダメージを受けた場合、代替要員の展開が必要となる。",
                     ap: "アクションポイント。身体的疲労やタイムラインの改変により消費される。高AP＝高いタイムライン安定性。",
                     loc: "工作員の最後に確認された時間的座標。",
@@ -3164,13 +3171,15 @@
                 brfHeader: "任务简报", brfTarget: "目标:", brfTelemetry: "分歧率遥测", brfCur: "当前值:",
                 brfTgtDiv: "目标值:", brfDiff: "差值:", brfObj: "主要目标:", brfImp: "战略重要性 (避免WW3):",
                 brfDesc: "情况简报:",
-                brfAsset: "特工资产配置", brfDob: "出生日期:", brfAge: "年龄:", brfH: "身高:", brfW: "体重:",
+                brfAsset: "特工资产配置", brfPersonality: "个性", brfDob: "出生日期:", brfAge: "年龄:", brfH: "身高:", brfW: "体重:",
                 brfBg: "背景:", brfPhys: "身体状态:", brfMent: "精神状态:", brfCancel: "[ 取消 ]", brfStart: "[ 开始潜入 ]",
                 traits: { "METHODICAL": "严谨", "BRUTE-FORCE": "暴力", "STEALTH": "隐秘", "SOCIAL": "社交" },
                 specs: { "Forensic Analyst": "法医分析师", "Heavy Munitions": "重火力专家", "Covert Infiltrator": "潜伏渗透者", "CIA Operative": "CIA特工" },
                 tooltips: {
                     obj: "本次时间线潜入的当前主要指令。",
                     agent: "当前部署的时间特工的实时生物遥测和名册。",
+                    brfSpec: "特工专业方向: {value}。",
+                    brfPersonality: "个性档案: {value}。它会影响特工在任务中的说话方式。",
                     hp: "特工的身体健康状况。受到致命伤害将需要部署替换人员。",
                     ap: "行动点数。因体力消耗和时间线改变而消耗。高AP=高时间线稳定性。",
                     loc: "特工最后已知的时间坐标。",
@@ -4198,6 +4207,7 @@
             const t = i18n[currentLang];
             const mLocale = mission[currentLang];
             const agentLore = state.agent.lore?.[currentLang] || state.agent.lore?.en || createEmptyAgentLoreEntry();
+            const agentTemplate = agentRoster.find(agent => agent.name === state.agent.name) || null;
             
             document.getElementById('brf-mission-title').innerText = mLocale.title;
             document.getElementById('brf-mission-diff').innerText = mLocale.diff;
@@ -4225,8 +4235,15 @@
             document.getElementById('brf-mission-importance').innerHTML = mLocale.importance;
             
             // Agent Setup
+            const localizedSpec = t.specs?.[state.agent.specialty] || state.agent.specialty.toUpperCase();
+            const personalityCodename = state.agent.personality?.codename || '---';
+            const specialtyTooltip = buildBriefingSpecialtyTooltip(agentTemplate);
+            const personalityTooltip = state.agent.personality?.summary || state.agent.personality?.voice || '---';
             document.getElementById('brf-agent-name').innerText = state.agent.name;
-            document.getElementById('brf-agent-spec').innerText = t.specs?.[state.agent.specialty] || state.agent.specialty.toUpperCase();
+            document.getElementById('brf-agent-spec').innerText = localizedSpec;
+            document.getElementById('brf-agent-personality').innerText = personalityCodename;
+            document.getElementById('brf-agent-spec').setAttribute('data-tooltip', specialtyTooltip);
+            document.getElementById('brf-agent-personality').setAttribute('data-tooltip', personalityTooltip);
             
             document.getElementById('brf-agent-dob').innerText = agentLore.dob;
             document.getElementById('brf-agent-age').innerText = agentLore.age;
@@ -4293,6 +4310,14 @@
                 quirks: Array.isArray(personality?.quirks) ? [...personality.quirks] : [],
                 operatorBond: personality?.operatorBond || "---"
             };
+        }
+
+        function buildBriefingSpecialtyTooltip(template = null) {
+            if (!template) return '---';
+            const skillText = Array.isArray(template.skills) && template.skills.length
+                ? template.skills.map(skill => `${skill.name}: ${skill.description}`).join(' ')
+                : '';
+            return [template.specialty, skillText].filter(Boolean).join('. ');
         }
 
         function draftNewAgent() {
