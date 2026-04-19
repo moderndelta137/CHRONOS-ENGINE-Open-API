@@ -420,6 +420,167 @@
 
         [data-tooltip] { cursor: help; }
 
+        .briefing-agent-page {
+            position: relative;
+            overflow: visible;
+        }
+
+        .briefing-page-panel {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .briefing-agent-profile {
+            min-height: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .briefing-agent-body {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .briefing-copy-scroll {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 0.35rem;
+            scrollbar-width: thin;
+        }
+
+        .briefing-agent-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .briefing-agent-portrait-frame {
+            width: min(100%, 11rem);
+            margin: 0 auto;
+            border: 1px solid var(--tm-highlight);
+            background: rgba(0, 0, 0, 0.75);
+            box-shadow: 0 0 16px var(--tm-shadow);
+            padding: 0.75rem;
+        }
+
+        .briefing-agent-portrait {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            display: block;
+            background: #050505;
+            filter: saturate(0.95) contrast(1.02);
+        }
+
+        @media (min-width: 900px) {
+            .briefing-agent-hero {
+                grid-template-columns: minmax(0, 1fr) 11rem;
+            }
+
+            .briefing-agent-portrait-frame {
+                width: 11rem;
+                margin: 0;
+            }
+        }
+
+        .briefing-agent-bookmarks {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .briefing-agent-bookmark {
+            width: 100%;
+            text-align: left;
+            border: 1px solid var(--tm-border);
+            background: rgba(0, 0, 0, 0.45);
+            color: var(--tm-text);
+            padding: 0.8rem 1rem 0.7rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .briefing-agent-bookmark:hover {
+            border-color: var(--tm-highlight);
+            background: rgba(205, 127, 50, 0.08);
+            transform: translateX(4px);
+        }
+
+        .briefing-agent-bookmark.is-selected {
+            border-color: var(--tm-highlight);
+            box-shadow: 0 0 16px var(--tm-shadow);
+            background: rgba(205, 127, 50, 0.1);
+        }
+
+        .briefing-agent-bookmark-name {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: clamp(1.05rem, 0.95rem + 0.7vw, 1.55rem);
+            line-height: 1;
+            text-align: right;
+            color: #ffffff;
+        }
+
+        .briefing-agent-bookmark-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            color: var(--tm-dim);
+        }
+
+        .briefing-agent-bookmark-bar {
+            height: 0.45rem;
+            flex: 1;
+            min-width: 4rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .briefing-agent-bookmark-fill {
+            height: 100%;
+            background: #ff4d57;
+            box-shadow: 0 0 10px rgba(255, 77, 87, 0.35);
+        }
+
+
+        @media (min-width: 1280px) {
+            .briefing-page-panel {
+                height: min(78vh, 54rem);
+            }
+
+            .briefing-agent-bookmarks {
+                position: absolute;
+                top: 0;
+                right: -14rem;
+                width: 12.5rem;
+                gap: 1.35rem;
+            }
+
+            .briefing-agent-bookmark {
+                padding: 0.9rem 0.95rem 0.75rem;
+            }
+
+            .briefing-agent-bookmark.is-selected {
+                transform: translateX(0.8rem);
+                width: 13.8rem;
+            }
+        }
+
+        .briefing-agent-page {
+            overflow: visible;
+        }
+
         #global-tooltip {
             position: fixed;
             background-color: var(--tm-bg);
@@ -1438,9 +1599,9 @@
         <div class="crt-overlay"></div>
         <h2 class="text-3xl md:text-5xl text-sys-text tracking-widest title-glitch relative z-10 news-font mb-6 uppercase" style="text-shadow: 0 0 20px var(--tm-shadow);" id="ui-brf-header">MISSION BRIEFING</h2>
         
-        <div class="w-full max-w-6xl relative z-10 flex flex-col md:flex-row gap-6 lg:gap-10 flex-1 overflow-hidden">
+        <div class="w-full max-w-6xl relative z-10 flex flex-col md:flex-row gap-6 lg:gap-10 flex-1 overflow-visible">
             <!-- Left Page: Mission Details -->
-            <div class="flex-1 bg-sys-panel border border-sys-border p-6 shadow-[0_0_30px_var(--tm-shadow)] text-left flex flex-col h-full overflow-y-auto">
+            <div class="briefing-page-panel flex-1 bg-sys-panel border border-sys-border p-6 shadow-[0_0_30px_var(--tm-shadow)] text-left flex flex-col h-full">
                  <div class="border-b border-sys-border pb-2 mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
                      <span class="text-sys-highlight font-bold text-xl"><span id="ui-brf-tgt">TARGET:</span> <span id="brf-mission-title" class="text-sys-text ml-2"></span></span>
                      <span class="text-sys-dim text-sm shrink-0" id="brf-mission-diff"></span>
@@ -1466,48 +1627,64 @@
                      <span class="text-sys-dim text-sm" id="ui-brf-obj">PRIMARY OBJECTIVE:</span>
                      <div class="text-sys-text text-lg font-bold mt-1" id="brf-mission-obj"></div>
                  </div>
-                 <div class="mb-4 shrink-0">
-                     <span class="text-sys-dim text-sm" id="ui-brf-desc">SITUATION BRIEFING:</span>
-                     <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-mission-briefing"></div>
-                 </div>
-                 <div class="mb-4 mt-auto">
-                     <span class="text-sys-dim text-sm" id="ui-brf-imp">STRATEGIC IMPORTANCE (WW3 PREVENTION):</span>
-                     <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-mission-importance"></div>
+                 <div class="briefing-copy-scroll">
+                     <div class="mb-4">
+                         <span class="text-sys-dim text-sm" id="ui-brf-desc">SITUATION BRIEFING:</span>
+                         <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-mission-briefing"></div>
+                     </div>
+                     <div class="mb-1">
+                         <span class="text-sys-dim text-sm" id="ui-brf-imp">STRATEGIC IMPORTANCE (WW3 PREVENTION):</span>
+                         <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-mission-importance"></div>
+                     </div>
                  </div>
             </div>
 
             <!-- Right Page: Agent Details -->
-            <div class="flex-1 bg-sys-panel border border-sys-border p-6 shadow-[0_0_30px_var(--tm-shadow)] text-left flex flex-col h-full overflow-y-auto">
-                 <div class="border-b border-sys-border pb-2 mb-4 shrink-0">
-                     <span class="text-sys-highlight font-bold text-xl" id="ui-brf-asset">AGENT ASSET PROFILE</span>
-                 </div>
-                <div class="flex flex-wrap items-end gap-3 mb-4 shrink-0">
-                    <div class="text-4xl lg:text-5xl font-bold text-sys-text news-font tracking-wider" id="brf-agent-name"></div>
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <div class="inline-flex items-center min-h-[2.25rem] border border-sys-highlight px-3 py-1 text-sm text-sys-highlight bg-sys-highlight/10 tracking-wide shadow-[0_0_12px_var(--tm-shadow)]" id="brf-agent-spec"></div>
-                        <span class="inline-flex items-center min-h-[2.25rem] border border-sys-highlight px-3 py-1 text-sm text-sys-highlight bg-sys-highlight/10 tracking-wide shadow-[0_0_12px_var(--tm-shadow)]" id="brf-agent-personality"></span>
+            <div class="briefing-agent-page briefing-page-panel flex-1 bg-sys-panel border border-sys-border p-6 shadow-[0_0_30px_var(--tm-shadow)] text-left flex flex-col h-full">
+                 <div class="briefing-agent-profile">
+                     <div class="border-b border-sys-border pb-2 mb-4 shrink-0">
+                         <span class="text-sys-highlight font-bold text-xl" id="ui-brf-asset">AGENT ASSET PROFILE</span>
+                     </div>
+                    <div class="briefing-agent-body">
+                        <div class="briefing-agent-hero mb-4 shrink-0">
+                            <div>
+                                <div class="flex flex-wrap items-end gap-3 mb-4 shrink-0">
+                                    <div class="text-4xl lg:text-5xl font-bold text-sys-text news-font tracking-wider" id="brf-agent-name"></div>
+                                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                                        <div class="inline-flex items-center min-h-[2.25rem] border border-sys-highlight px-3 py-1 text-sm text-sys-highlight bg-sys-highlight/10 tracking-wide shadow-[0_0_12px_var(--tm-shadow)]" id="brf-agent-spec"></div>
+                                        <span class="inline-flex items-center min-h-[2.25rem] border border-sys-highlight px-3 py-1 text-sm text-sys-highlight bg-sys-highlight/10 tracking-wide shadow-[0_0_12px_var(--tm-shadow)]" id="brf-agent-personality"></span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4 text-sm shrink-0">
+                                    <div><span class="text-sys-dim" id="ui-brf-dob">DOB:</span> <span class="text-sys-text ml-1" id="brf-agent-dob"></span></div>
+                                    <div><span class="text-sys-dim" id="ui-brf-age">AGE:</span> <span class="text-sys-text ml-1" id="brf-agent-age"></span></div>
+                                    <div><span class="text-sys-dim" id="ui-brf-h">HEIGHT:</span> <span class="text-sys-text ml-1" id="brf-agent-h"></span></div>
+                                    <div><span class="text-sys-dim" id="ui-brf-w">WEIGHT:</span> <span class="text-sys-text ml-1" id="brf-agent-w"></span></div>
+                                </div>
+                            </div>
+                            <div class="briefing-agent-portrait-frame">
+                                <img id="brf-agent-portrait" class="briefing-agent-portrait" alt="Agent portrait" />
+                            </div>
+                        </div>
+                        <div class="briefing-copy-scroll">
+                            <div class="mb-4">
+                                <span class="text-sys-dim text-sm" id="ui-brf-bg">BACKGROUND:</span>
+                                <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-agent-bg"></div>
+                            </div>
+                            <div class="flex flex-col gap-4 mb-1">
+                                <div>
+                                    <span class="text-sys-dim text-sm" id="ui-brf-phys">PHYSICAL STATUS:</span>
+                                    <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-agent-phys"></div>
+                                </div>
+                                <div>
+                                    <span class="text-sys-dim text-sm" id="ui-brf-ment">MENTAL STATUS:</span>
+                                    <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-agent-ment"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mb-4 text-sm shrink-0">
-                    <div><span class="text-sys-dim" id="ui-brf-dob">DOB:</span> <span class="text-sys-text ml-1" id="brf-agent-dob"></span></div>
-                    <div><span class="text-sys-dim" id="ui-brf-age">AGE:</span> <span class="text-sys-text ml-1" id="brf-agent-age"></span></div>
-                     <div><span class="text-sys-dim" id="ui-brf-h">HEIGHT:</span> <span class="text-sys-text ml-1" id="brf-agent-h"></span></div>
-                     <div><span class="text-sys-dim" id="ui-brf-w">WEIGHT:</span> <span class="text-sys-text ml-1" id="brf-agent-w"></span></div>
                  </div>
-                 <div class="mb-4">
-                     <span class="text-sys-dim text-sm" id="ui-brf-bg">BACKGROUND:</span>
-                     <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-agent-bg"></div>
-                 </div>
-                 <div class="mt-auto flex flex-col gap-4 mb-4">
-                     <div>
-                         <span class="text-sys-dim text-sm" id="ui-brf-phys">PHYSICAL STATUS:</span>
-                         <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-agent-phys"></div>
-                     </div>
-                     <div>
-                         <span class="text-sys-dim text-sm" id="ui-brf-ment">MENTAL STATUS:</span>
-                         <div class="text-sys-text text-base md:text-lg leading-relaxed mt-1 opacity-90" id="brf-agent-ment"></div>
-                     </div>
-                 </div>
+                 <div class="briefing-agent-bookmarks" id="brf-agent-list" aria-label="Deployment roster"></div>
             </div>
         </div>
         
@@ -3013,7 +3190,7 @@
                 brfHeader: "MISSION BRIEFING", brfTarget: "TARGET:", brfTelemetry: "DIVERGENCE TELEMETRY", brfCur: "CURRENT:",
                 brfTgtDiv: "TARGET:", brfDiff: "DIFF:", brfObj: "PRIMARY OBJECTIVE:", brfImp: "STRATEGIC IMPORTANCE (WW3 PREVENTION):",
                 brfDesc: "SITUATION BRIEFING:",
-                brfAsset: "AGENT ASSET PROFILE", brfPersonality: "PERSONALITY", brfDob: "DOB:", brfAge: "AGE:", brfH: "HEIGHT:", brfW: "WEIGHT:",
+                brfAsset: "AGENT ASSET PROFILE", brfRoster: "DEPLOYMENT ROSTER", brfHpShort: "HP", brfSelected: "SELECTED", brfPersonality: "PERSONALITY", brfDob: "DOB:", brfAge: "AGE:", brfH: "HEIGHT:", brfW: "WEIGHT:",
                 brfBg: "BACKGROUND:", brfPhys: "PHYSICAL STATUS:", brfMent: "MENTAL STATUS:", brfCancel: "[ CANCEL ]", brfStart: "[ COMMENCE INSERTION ]",
                 traits: { "METHODICAL": "METHODICAL", "BRUTE-FORCE": "BRUTE-FORCE", "STEALTH": "STEALTH", "SOCIAL": "SOCIAL" },
                 specs: { "Forensic Analyst": "FORENSIC ANALYST", "Heavy Munitions": "HEAVY MUNITIONS", "Covert Infiltrator": "COVERT INFILTRATOR", "CIA Operative": "CIA OPERATIVE" },
@@ -3092,7 +3269,7 @@
                 brfHeader: "ミッション・ブリーフィング", brfTarget: "ターゲット:", brfTelemetry: "ダイバージェンス・テレメトリ", brfCur: "現在値:",
                 brfTgtDiv: "目標値:", brfDiff: "差分:", brfObj: "主要任務:", brfImp: "戦略的重要事項 (WW3回避):",
                 brfDesc: "状況説明:",
-                brfAsset: "エージェント・プロファイル", brfPersonality: "個性", brfDob: "生年月日:", brfAge: "年齢:", brfH: "身長:", brfW: "体重:",
+                brfAsset: "エージェント・プロファイル", brfRoster: "投入エージェント", brfHpShort: "HP", brfSelected: "選択中", brfPersonality: "個性", brfDob: "生年月日:", brfAge: "年齢:", brfH: "身長:", brfW: "体重:",
                 brfBg: "経歴:", brfPhys: "身体的状態:", brfMent: "精神的状態:", brfCancel: "[ キャンセル ]", brfStart: "[ 潜入開始 ]",
                 traits: { "METHODICAL": "論理的", "BRUTE-FORCE": "力押し", "STEALTH": "隠密", "SOCIAL": "社交的" },
                 specs: { "Forensic Analyst": "法医学アナリスト", "Heavy Munitions": "重火器専門", "Covert Infiltrator": "潜入工作員", "CIA Operative": "CIA工作員" },
@@ -3171,7 +3348,7 @@
                 brfHeader: "任务简报", brfTarget: "目标:", brfTelemetry: "分歧率遥测", brfCur: "当前值:",
                 brfTgtDiv: "目标值:", brfDiff: "差值:", brfObj: "主要目标:", brfImp: "战略重要性 (避免WW3):",
                 brfDesc: "情况简报:",
-                brfAsset: "特工资产配置", brfPersonality: "个性", brfDob: "出生日期:", brfAge: "年龄:", brfH: "身高:", brfW: "体重:",
+                brfAsset: "特工资产配置", brfRoster: "部署名单", brfHpShort: "HP", brfSelected: "已选", brfPersonality: "个性", brfDob: "出生日期:", brfAge: "年龄:", brfH: "身高:", brfW: "体重:",
                 brfBg: "背景:", brfPhys: "身体状态:", brfMent: "精神状态:", brfCancel: "[ 取消 ]", brfStart: "[ 开始潜入 ]",
                 traits: { "METHODICAL": "严谨", "BRUTE-FORCE": "暴力", "STEALTH": "隐秘", "SOCIAL": "社交" },
                 specs: { "Forensic Analyst": "法医分析师", "Heavy Munitions": "重火力专家", "Covert Infiltrator": "潜伏渗透者", "CIA Operative": "CIA特工" },
@@ -3309,6 +3486,10 @@
             updateSpeedLabel();
             if(state.runCount > 0 && !document.getElementById('screen-container').classList.contains('hidden')) updateUI();
             if(!document.getElementById('timeline-screen').classList.contains('hidden')) renderTimeline();
+            if(!document.getElementById('briefing-screen').classList.contains('hidden')) {
+                renderBriefingAgentProfile();
+                renderBriefingAgentRoster();
+            }
         }
 
         /** --- FORMATTING UTILS --- */
@@ -4202,12 +4383,11 @@
             await switchScreen('briefing-screen');
             console.debug(`[CHRONOS] switched to briefing-screen for ${levelId}`);
             
-            draftNewAgent();
+            const initialTemplate = agentRoster.find(agent => agent.name === state.agent.name) || agentRoster[Math.floor(Math.random() * agentRoster.length)];
+            applyAgentTemplate(initialTemplate);
             
             const t = i18n[currentLang];
             const mLocale = mission[currentLang];
-            const agentLore = state.agent.lore?.[currentLang] || state.agent.lore?.en || createEmptyAgentLoreEntry();
-            const agentTemplate = agentRoster.find(agent => agent.name === state.agent.name) || null;
             
             document.getElementById('brf-mission-title').innerText = mLocale.title;
             document.getElementById('brf-mission-diff').innerText = mLocale.diff;
@@ -4234,24 +4414,8 @@
             document.getElementById('brf-mission-briefing').innerHTML = mLocale.briefing;
             document.getElementById('brf-mission-importance').innerHTML = mLocale.importance;
             
-            // Agent Setup
-            const localizedSpec = t.specs?.[state.agent.specialty] || state.agent.specialty.toUpperCase();
-            const personalityCodename = state.agent.personality?.codename || '---';
-            const specialtyTooltip = buildBriefingSpecialtyTooltip(agentTemplate);
-            const personalityTooltip = state.agent.personality?.summary || state.agent.personality?.voice || '---';
-            document.getElementById('brf-agent-name').innerText = state.agent.name;
-            document.getElementById('brf-agent-spec').innerText = localizedSpec;
-            document.getElementById('brf-agent-personality').innerText = personalityCodename;
-            document.getElementById('brf-agent-spec').setAttribute('data-tooltip', specialtyTooltip);
-            document.getElementById('brf-agent-personality').setAttribute('data-tooltip', personalityTooltip);
-            
-            document.getElementById('brf-agent-dob').innerText = agentLore.dob;
-            document.getElementById('brf-agent-age').innerText = agentLore.age;
-            document.getElementById('brf-agent-h').innerText = agentLore.h;
-            document.getElementById('brf-agent-w').innerText = agentLore.w;
-            document.getElementById('brf-agent-bg').innerHTML = agentLore.bg;
-            document.getElementById('brf-agent-phys').innerText = agentLore.phys;
-            document.getElementById('brf-agent-ment').innerText = agentLore.ment;
+            renderBriefingAgentProfile();
+            renderBriefingAgentRoster();
         }
 
         document.getElementById('btn-briefing-back')?.addEventListener('click', () => {
@@ -4320,8 +4484,20 @@
             return [template.specialty, skillText].filter(Boolean).join('. ');
         }
 
-        function draftNewAgent() {
-            const template = agentRoster[Math.floor(Math.random() * agentRoster.length)];
+        function getAgentPortraitSrc(agentName = '') {
+            const portraitMap = {
+                KESSLER: 'assets/sprites/agent portraits/agent_Kessler.png',
+                CHEN: 'assets/sprites/agent portraits/agent_Chen.png',
+                NOVA: 'assets/sprites/agent portraits/agent_Nova.png',
+                VANCE: 'assets/sprites/agent portraits/agent_Vance.png'
+            };
+            const src = portraitMap[agentName?.toUpperCase?.()] || '';
+            return src ? encodeURI(src) : '';
+        }
+
+        function applyAgentTemplate(template, options = {}) {
+            if (!template) return;
+            const resetVitals = options.resetVitals !== false;
             state.agent.name = template.name;
             state.agent.trait = template.trait;
             state.agent.specialty = template.specialty;
@@ -4329,10 +4505,84 @@
             state.agent.inventory = [...template.inventory];
             state.agent.lore = template.lore;
             state.agent.personality = cloneAgentPersonality(template.personality);
-            // Base scaled to 100 to sync precisely with AP tracking
-            state.agent.base_max_hp = 100; state.agent.max_hp = 100; state.agent.hp = 100;
-            state.agent.max_ap = 100; state.agent.ap = 100;
+            if (resetVitals) {
+                state.agent.base_max_hp = 100;
+                state.agent.max_hp = 100;
+                state.agent.hp = 100;
+                state.agent.max_ap = 100;
+                state.agent.ap = 100;
+            }
             updateUI();
+        }
+
+        function renderBriefingAgentRoster() {
+            const listEl = document.getElementById('brf-agent-list');
+            if (!listEl) return;
+            const t = { ...i18n.en, ...(i18n[currentLang] || {}) };
+            listEl.innerHTML = '';
+
+            agentRoster.forEach((agent) => {
+                const isSelected = agent.name === state.agent.name;
+                const hpPct = isSelected
+                    ? Math.max(0, Math.min(100, Math.round((state.agent.hp / state.agent.base_max_hp) * 100)))
+                    : 100;
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.className = `briefing-agent-bookmark ${isSelected ? 'is-selected' : ''}`;
+                card.dataset.agentName = agent.name;
+                card.setAttribute('data-tooltip', `${agent.name} // ${t.specs?.[agent.specialty] || agent.specialty.toUpperCase()}`);
+                card.innerHTML = `
+                    <span class="briefing-agent-bookmark-name">${agent.name}</span>
+                    <div class="briefing-agent-bookmark-meta">
+                        <span>${t.brfHpShort}</span>
+                        <div class="briefing-agent-bookmark-bar">
+                            <div class="briefing-agent-bookmark-fill" style="width: ${hpPct}%;"></div>
+                        </div>
+                        <span>${hpPct}%</span>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    applyAgentTemplate(agent);
+                    renderBriefingAgentProfile();
+                    renderBriefingAgentRoster();
+                });
+                listEl.appendChild(card);
+            });
+        }
+
+        function renderBriefingAgentProfile() {
+            const t = { ...i18n.en, ...(i18n[currentLang] || {}) };
+            const agentLore = state.agent.lore?.[currentLang] || state.agent.lore?.en || createEmptyAgentLoreEntry();
+            const agentTemplate = agentRoster.find(agent => agent.name === state.agent.name) || null;
+            const localizedSpec = t.specs?.[state.agent.specialty] || state.agent.specialty.toUpperCase();
+            const personalityCodename = state.agent.personality?.codename || '---';
+            const specialtyTooltip = buildBriefingSpecialtyTooltip(agentTemplate);
+            const personalityTooltip = state.agent.personality?.summary || state.agent.personality?.voice || '---';
+            const portraitEl = document.getElementById('brf-agent-portrait');
+            const portraitSrc = getAgentPortraitSrc(state.agent.name);
+
+            document.getElementById('brf-agent-name').innerText = state.agent.name;
+            document.getElementById('brf-agent-spec').innerText = localizedSpec;
+            document.getElementById('brf-agent-personality').innerText = personalityCodename;
+            document.getElementById('brf-agent-spec').setAttribute('data-tooltip', specialtyTooltip);
+            document.getElementById('brf-agent-personality').setAttribute('data-tooltip', personalityTooltip);
+            if (portraitEl) {
+                portraitEl.src = portraitSrc;
+                portraitEl.alt = `${state.agent.name} portrait`;
+                portraitEl.style.display = portraitSrc ? 'block' : 'none';
+            }
+            document.getElementById('brf-agent-dob').innerText = agentLore.dob;
+            document.getElementById('brf-agent-age').innerText = agentLore.age;
+            document.getElementById('brf-agent-h').innerText = agentLore.h;
+            document.getElementById('brf-agent-w').innerText = agentLore.w;
+            document.getElementById('brf-agent-bg').innerHTML = agentLore.bg;
+            document.getElementById('brf-agent-phys').innerText = agentLore.phys;
+            document.getElementById('brf-agent-ment').innerText = agentLore.ment;
+        }
+
+        function draftNewAgent() {
+            const template = agentRoster[Math.floor(Math.random() * agentRoster.length)];
+            applyAgentTemplate(template);
         }
 
         /** --- DOM ELEMENTS --- */
@@ -5305,11 +5555,125 @@
             }
         }
 
+        function assessActionRisk(cmdText = '') {
+            const normalized = String(cmdText || '').toLowerCase();
+            const hasAny = patterns => patterns.some(pattern => normalized.includes(pattern));
+            const risk = {
+                level: 'MEDIUM',
+                reckless: false,
+                offensive: false,
+                stealthy: false,
+                guidance: 'Treat this as a field action with some uncertainty. Partial success and complications are valid outcomes.'
+            };
+
+            if (!normalized.trim()) {
+                risk.level = 'LOW';
+                risk.guidance = 'No clear action declared. Default to a cautious low-impact interpretation.';
+                return risk;
+            }
+
+            if (hasAny(['observe', 'scan', 'listen', 'wait', 'hide', 'recon', 'survey', 'watch', 'eavesdrop', 'peek', 'check', 'assess'])) {
+                risk.level = 'LOW';
+                risk.stealthy = true;
+                risk.guidance = 'Cautious information-gathering action. Low AP is appropriate, but do not guarantee major progress.';
+            }
+
+            if (hasAny(['search', 'inspect', 'investigate', 'track', 'follow', 'tail', 'move', 'advance', 'enter', 'cross', 'climb', 'unlock', 'hack', 'probe'])) {
+                risk.level = risk.level === 'LOW' ? 'MEDIUM' : risk.level;
+                risk.guidance = 'Moderate field action. Partial success, delays, or minor exposure are common.';
+            }
+
+            if (hasAny(['shoot', 'fire', 'attack', 'assault', 'charge', 'rush', 'storm', 'ambush', 'breach', 'stab', 'knife', 'grenade', 'bomb', 'explode', 'detonate', 'kick in', 'smash', 'force'])) {
+                risk.level = 'HIGH';
+                risk.reckless = true;
+                risk.offensive = true;
+                risk.guidance = 'Direct confrontation. Clean success should be uncommon; expect heavy AP use, resistance, and meaningful injury risk.';
+            }
+
+            if (hasAny(['suicide', 'stand in the open', 'frontal', 'head-on', 'without cover', 'draw all fire', 'charge blindly', 'reckless', 'wildly'])) {
+                risk.level = 'EXTREME';
+                risk.reckless = true;
+                risk.offensive = true;
+                risk.guidance = 'Extremely reckless action. Failure, severe complications, and HP damage should be very likely.';
+            }
+
+            return risk;
+        }
+
+        function rebalanceAiPayload(data, cmdText = '', isSystemInit = false) {
+            if (isSystemInit || !data || typeof data !== 'object') {
+                return data;
+            }
+
+            const risk = assessActionRisk(cmdText);
+            const normalizedCommand = String(cmdText || '').toLowerCase();
+            const responseText = Array.isArray(data.narrative_response)
+                ? data.narrative_response.join(' ').toLowerCase()
+                : String(data.narrative_response || '').toLowerCase();
+            const optionTexts = Array.isArray(data.next_options)
+                ? data.next_options.map(option => String(option?.action_text || '').toLowerCase()).join(' ')
+                : '';
+
+            const hintsOfDanger = ['enemy', 'gunfire', 'fire', 'blast', 'alarm', 'wound', 'shot', 'shrapnel', 'bleed', 'explosion', 'detected', 'spotted', 'return fire', 'suppression']
+                .some(token => responseText.includes(token) || optionTexts.includes(token));
+            const hintsOfFailure = ['miss', 'fail', 'failed', 'cannot', 'unable', 'too late', 'blocked', 'jammed', 'detected', 'spotted', 'empty']
+                .some(token => responseText.includes(token));
+            const lowValueAction = ['search', 'inspect', 'investigate', 'probe', 'look', 'check', 'scan'].some(token => normalizedCommand.includes(token));
+
+            if (risk.level === 'LOW') {
+                data.AP_cost = Math.max(2, data.AP_cost || 0);
+                data.AP_cost = Math.min(data.AP_cost, 10);
+                if (!hintsOfDanger) {
+                    data.HP_damage = Math.max(0, data.HP_damage || 0);
+                }
+            } else if (risk.level === 'MEDIUM') {
+                data.AP_cost = Math.max(6, data.AP_cost || 0);
+                if (hintsOfDanger && (data.HP_damage || 0) < 4) {
+                    data.HP_damage = 4 + Math.floor(Math.random() * 4);
+                }
+                if (lowValueAction && !data.intel_acquired && !hintsOfFailure) {
+                    data.AP_cost = Math.max(data.AP_cost, 8);
+                }
+            } else if (risk.level === 'HIGH') {
+                data.AP_cost = Math.max(12, data.AP_cost || 0);
+                if ((data.HP_damage || 0) < 8) {
+                    data.HP_damage = 8 + Math.floor(Math.random() * 7);
+                }
+                if ((data.max_HP_damage || 0) < 1 && risk.reckless) {
+                    data.max_HP_damage = Math.floor(Math.random() * 3);
+                }
+                if (!hintsOfFailure && Math.abs(Number(data.divergence_shift) || 0) < 0.0002) {
+                    data.divergence_shift = (Math.random() - 0.5) * 0.0035;
+                }
+            } else if (risk.level === 'EXTREME') {
+                data.AP_cost = Math.max(18, data.AP_cost || 0);
+                if ((data.HP_damage || 0) < 14) {
+                    data.HP_damage = 14 + Math.floor(Math.random() * 9);
+                }
+                data.max_HP_damage = Math.max(1, data.max_HP_damage || 0);
+                if (!hintsOfFailure && Math.abs(Number(data.divergence_shift) || 0) < 0.0004) {
+                    data.divergence_shift = (Math.random() - 0.5) * 0.0055;
+                }
+            }
+
+            if ((risk.reckless || risk.offensive) && hintsOfDanger && (data.HP_damage || 0) < 6) {
+                data.HP_damage = 6 + Math.floor(Math.random() * 5);
+            }
+
+            data.AP_cost = Math.max(0, Math.round(Number(data.AP_cost) || 0));
+            data.HP_damage = Math.max(-20, Math.round(Number(data.HP_damage) || 0));
+            data.max_HP_damage = Math.max(0, Math.round(Number(data.max_HP_damage) || 0));
+            data.divergence_shift = Number(Number(data.divergence_shift || 0).toFixed(6));
+
+            return data;
+        }
+
         async function generateAIResponse(cmdText, isSystemInit = false) {
             if (!getConfiguredApiKey()) {
                 return null;
             }
             const mData = missionsData[currentLevelId];
+            const actionRisk = assessActionRisk(cmdText);
             
             // Allow more flexible divergence shifting for side quests
             const divergenceInstruction = mData.type === 'side' 
@@ -5342,6 +5706,11 @@ IMPORTANT INSTRUCTIONS FOR YOUR NARRATIVE RESPONSE:
 - GAMEPLAY DESIGN: Hide objective targets in nearby plausible locations based on the briefing. If the player investigates the WRONG location, give them a subtle hint directing them to the correct one.
 - ${divergenceInstruction}
 - AP ECONOMY: Keep AP costs lean. Most standard actions should feel about half as expensive as a harsh tactical sim. Recon, movement, and observation should usually be low-cost unless the action is unusually dangerous or complex.
+- ACTION RISK FOR THIS TURN: ${actionRisk.level}. ${actionRisk.guidance}
+- BALANCE RULE: Do NOT make most player commands succeed cleanly. Partial success, costly success, stalled progress, bad positioning, and misreads should happen often enough to create tension.
+- DAMAGE RULE: If the action invites return fire, exposure, close combat, explosions, alarms, or desperate movement through a hostile area, HP damage should be common rather than rare.
+- FAILURE RULE: If the player pushes the wrong lead, rushes the objective, or uses brute force without setup, the outcome should often be failure or costly partial success rather than a free breakthrough.
+- CONSEQUENCE RULE: High-risk actions should rarely resolve with both low AP cost and zero HP loss. Reckless actions should usually feel expensive even when they work.
 - DO NOT act like a Game Master. Act like the agent reporting their situation.
 - Use standard sentence case. DO NOT use ALL CAPS for narrative text.
 - MAP MEMORY: Do NOT hallucinate map locations. ONLY add a location to 'new_nodes' if the agent physically discovers it or receives verified visual intel about it during this specific turn.
@@ -5455,7 +5824,7 @@ Return JSON matching schema.`;
             
             if (aiText) {
                 try {
-                    await applyGameStateChanges(JSON.parse(aiText), isSystemInit);
+                    await applyGameStateChanges(JSON.parse(aiText), isSystemInit, cmdText);
                 } catch (parseError) {
                     setLastAiDebugInfo(parseError, {
                         phase: 'json-parse',
@@ -5625,8 +5994,9 @@ Return JSON matching schema.`;
             };
         }
 
-        async function applyGameStateChanges(data, isSystemInit = false) {
+        async function applyGameStateChanges(data, isSystemInit = false, cmdText = '') {
             data = normalizeAiPayload(data, isSystemInit);
+            data = rebalanceAiPayload(data, cmdText, isSystemInit);
             const sysLogs = [];
 
             if (data.chronal_rejection) {
