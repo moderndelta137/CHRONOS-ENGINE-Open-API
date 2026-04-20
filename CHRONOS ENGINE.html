@@ -681,18 +681,20 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: min(58vw, 49rem);
-            height: min(66vh, 44rem);
+            width: min(64vw, 56rem);
+            aspect-ratio: 3 / 2;
             border: 1px solid var(--tm-border);
             background: rgba(0, 0, 0, 0.78);
             box-shadow: 0 0 18px var(--tm-shadow);
             padding: 0.55rem;
+            display: flex;
+            align-items: stretch;
         }
 
         .intro-visual {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             object-position: center center;
             display: block;
             background: #020202;
@@ -890,7 +892,7 @@
             .intro-visual-frame {
                 position: relative;
                 width: 100%;
-                height: min(35dvh, 16rem);
+                aspect-ratio: 3 / 2;
                 padding: 0.35rem;
             }
 
@@ -1318,8 +1320,8 @@
             }
 
             .intro-visual-frame {
-                width: min(56vw, 42rem);
-                height: min(58vh, 24rem);
+                width: min(62vw, 46rem);
+                aspect-ratio: 3 / 2;
                 padding: 0.4rem;
             }
 
@@ -1867,6 +1869,8 @@
             z-index: 390;
             width: min(90vw, 32rem);
             max-width: min(90vw, 32rem);
+            max-height: calc(var(--app-height, 100vh) - 2rem);
+            overflow-y: auto;
         }
 
         #tutorial-dialog .tutorial-copy {
@@ -5529,8 +5533,17 @@
             if (!els.tutorialDialog) return;
 
             const dialog = els.tutorialDialog;
-            const viewportPadding = window.innerWidth < 768 ? 16 : 24;
-            const gap = window.innerWidth < 768 ? 12 : 20;
+            const viewport = window.visualViewport;
+            const viewportLeft = viewport?.offsetLeft || 0;
+            const viewportTop = viewport?.offsetTop || 0;
+            const viewportWidth = viewport?.width || window.innerWidth;
+            const viewportHeight = viewport?.height || window.innerHeight;
+            const viewportRight = viewportLeft + viewportWidth;
+            const viewportBottom = viewportTop + viewportHeight;
+            const viewportPadding = viewportWidth < 768 ? 16 : 24;
+            const gap = viewportWidth < 768 ? 12 : 20;
+
+            dialog.style.maxHeight = `${Math.max(160, viewportHeight - viewportPadding * 2)}px`;
 
             dialog.style.top = '50%';
             dialog.style.left = '50%';
@@ -5538,20 +5551,47 @@
             dialog.style.bottom = 'auto';
             dialog.style.transform = 'translate(-50%, -50%)';
 
-            if (!targetEl || window.innerWidth < 900) {
-                return;
-            }
-
-            const targetRect = targetEl.getBoundingClientRect();
             const dialogRect = dialog.getBoundingClientRect();
             const dialogWidth = dialogRect.width;
             const dialogHeight = dialogRect.height;
 
+            const centeredTop = Math.min(
+                viewportBottom - dialogHeight - viewportPadding,
+                Math.max(viewportTop + viewportPadding, viewportTop + (viewportHeight - dialogHeight) / 2)
+            );
+            const centeredLeft = Math.min(
+                viewportRight - dialogWidth - viewportPadding,
+                Math.max(viewportLeft + viewportPadding, viewportLeft + (viewportWidth - dialogWidth) / 2)
+            );
+
+            if (!targetEl || viewportWidth < 900) {
+                dialog.style.top = `${centeredTop}px`;
+                dialog.style.left = `${centeredLeft}px`;
+                dialog.style.transform = 'none';
+                return;
+            }
+
+            const targetRect = targetEl.getBoundingClientRect();
+            const horizontalEdgeBuffer = Math.max(viewportPadding * 2, Math.min(140, viewportWidth * 0.14));
+            const verticalEdgeBuffer = Math.max(viewportPadding * 2, Math.min(180, viewportHeight * 0.18));
+            const targetTooCloseToEdge =
+                targetRect.left <= viewportLeft + horizontalEdgeBuffer ||
+                targetRect.right >= viewportRight - horizontalEdgeBuffer ||
+                targetRect.top <= viewportTop + verticalEdgeBuffer ||
+                targetRect.bottom >= viewportBottom - verticalEdgeBuffer;
+
+            if (targetTooCloseToEdge) {
+                dialog.style.top = `${centeredTop}px`;
+                dialog.style.left = `${centeredLeft}px`;
+                dialog.style.transform = 'none';
+                return;
+            }
+
             let left = targetRect.right + gap;
             let top = targetRect.top + Math.max(0, (targetRect.height - dialogHeight) / 2);
 
-            const fitsRight = left + dialogWidth <= window.innerWidth - viewportPadding;
-            const fitsLeft = targetRect.left - gap - dialogWidth >= viewportPadding;
+            const fitsRight = left + dialogWidth <= viewportRight - viewportPadding;
+            const fitsLeft = targetRect.left - gap - dialogWidth >= viewportLeft + viewportPadding;
 
             if (!fitsRight && fitsLeft) {
                 left = targetRect.left - gap - dialogWidth;
@@ -5559,25 +5599,26 @@
                 const belowTop = targetRect.bottom + gap;
                 const aboveTop = targetRect.top - gap - dialogHeight;
 
-                if (belowTop + dialogHeight <= window.innerHeight - viewportPadding) {
+                if (belowTop + dialogHeight <= viewportBottom - viewportPadding) {
                     left = Math.min(
-                        window.innerWidth - dialogWidth - viewportPadding,
-                        Math.max(viewportPadding, targetRect.left + (targetRect.width - dialogWidth) / 2)
+                        viewportRight - dialogWidth - viewportPadding,
+                        Math.max(viewportLeft + viewportPadding, targetRect.left + (targetRect.width - dialogWidth) / 2)
                     );
                     top = belowTop;
-                } else if (aboveTop >= viewportPadding) {
+                } else if (aboveTop >= viewportTop + viewportPadding) {
                     left = Math.min(
-                        window.innerWidth - dialogWidth - viewportPadding,
-                        Math.max(viewportPadding, targetRect.left + (targetRect.width - dialogWidth) / 2)
+                        viewportRight - dialogWidth - viewportPadding,
+                        Math.max(viewportLeft + viewportPadding, targetRect.left + (targetRect.width - dialogWidth) / 2)
                     );
                     top = aboveTop;
                 } else {
-                    return;
+                    top = centeredTop;
+                    left = centeredLeft;
                 }
             }
 
-            top = Math.min(window.innerHeight - dialogHeight - viewportPadding, Math.max(viewportPadding, top));
-            left = Math.min(window.innerWidth - dialogWidth - viewportPadding, Math.max(viewportPadding, left));
+            top = Math.min(viewportBottom - dialogHeight - viewportPadding, Math.max(viewportTop + viewportPadding, top));
+            left = Math.min(viewportRight - dialogWidth - viewportPadding, Math.max(viewportLeft + viewportPadding, left));
 
             dialog.style.top = `${top}px`;
             dialog.style.left = `${left}px`;
